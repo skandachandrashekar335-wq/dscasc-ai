@@ -9,281 +9,568 @@ import {
   Coins,
   Rocket,
   PhoneCall,
-  Sparkles,
   ArrowRight,
-  ShieldCheck,
+  ChevronRight,
   Cpu,
-  Search,
-  CheckCircle,
-  FileText,
+  Sparkles,
+  ShieldCheck,
 } from "lucide-react";
+import { SectionHeading } from "@/components/ui/SectionHeading";
+import { KNOWLEDGE_BASE } from "@/lib/knowledgeBase";
+
+const INTENT_COUNT = KNOWLEDGE_BASE.length;
+
+const explorePrograms = [
+  {
+    level: "Undergraduate",
+    badge: "UG",
+    note: "3 years · 6 semesters",
+    color: "bg-brand-yellow",
+    items: [
+      { abbr: "BCA", name: "Bachelor of Computer Applications" },
+      { abbr: "BBA", name: "Bachelor of Business Administration" },
+      { abbr: "B.Com", name: "Bachelor of Commerce" },
+      { abbr: "B.Sc", name: "Bachelor of Science" },
+    ],
+  },
+  {
+    level: "Postgraduate",
+    badge: "PG",
+    note: "MBA & M.Com: 2 years · MCA: see prospectus",
+    color: "bg-brand-sage",
+    items: [
+      { abbr: "MCA", name: "Master of Computer Applications" },
+      { abbr: "MBA", name: "Master of Business Administration" },
+      { abbr: "M.Com", name: "Master of Commerce" },
+    ],
+  },
+];
+
+const topicCards = [
+  {
+    title: "Admissions",
+    icon: GraduationCap,
+    emoji: "🎓",
+    color: "bg-brand-yellow",
+    description:
+      "Eligibility criteria, application procedures, and required document verification.",
+    sampleQuery: "How do I apply for BCA?",
+    badge: "Eligibility & Forms",
+  },
+  {
+    title: "Courses",
+    icon: BookOpen,
+    emoji: "📚",
+    color: "bg-brand-sage",
+    description:
+      "Undergraduate (BCA, BBA, B.Com, B.Sc) and Postgraduate (MCA, MBA, M.Com) curriculums.",
+    sampleQuery: "What courses are available at DSCASC?",
+    badge: "UG & PG Degrees",
+  },
+  {
+    title: "Academics",
+    icon: Calendar,
+    emoji: "📅",
+    color: "bg-white",
+    description: "Semester schedules, continuous assessments, circulars, and exam notifications.",
+    sampleQuery: "When are semester exams?",
+    badge: "Exams & Circulars",
+  },
+  {
+    title: "BCA",
+    icon: Laptop,
+    emoji: "💻",
+    color: "bg-brand-yellow",
+    description: "Department leadership, SEP 2024 syllabus, class timetables, and Centers of Excellence.",
+    sampleQuery: "Where can I find the BCA timetable?",
+    badge: "Timetable & Syllabus",
+  },
+  {
+    title: "Fees",
+    icon: Coins,
+    emoji: "💰",
+    color: "bg-brand-sage",
+    description: "Official fee guidelines, merit/management quotas, and state scholarship assistance.",
+    sampleQuery: "What is BCA fee?",
+    badge: "Official Guidance",
+  },
+  {
+    title: "Placements",
+    icon: Rocket,
+    emoji: "🚀",
+    color: "bg-white",
+    description: "Verified statistics: 300 companies, 8 LPA highest package, placement cell contact.",
+    sampleQuery: "What is the placement record of DSCASC?",
+    badge: "Verified Statistics",
+  },
+  {
+    title: "Contact",
+    icon: PhoneCall,
+    emoji: "📞",
+    color: "bg-brand-yellow",
+    description: "Campus location at Kumaraswamy Layout, official admissions numbers, and office emails.",
+    sampleQuery: "How do I contact DSCASC?",
+    badge: "Official Office",
+  },
+];
+
+const quickQuestions = [
+  "How can I apply for BCA?",
+  "What courses does DSCASC offer?",
+  "Where can I find the BCA timetable?",
+  "What is the placement record?",
+  "What is the highest package?",
+  "How do I contact the college?",
+];
+
+const pipelineStages = [
+  { step: "01", name: "Normalization", detail: "Lowercase, typo & slang repair, acronym folding" },
+  { step: "02", name: "Tokenization", detail: "Unigrams plus composite bigram features" },
+  { step: "03", name: "Stopword Handling", detail: "Removes grammatical noise, keeps domain terms" },
+  { step: "04", name: "TF-IDF", detail: "Smoothed inverse document frequency, L2 normalized" },
+  { step: "05", name: "Cosine Similarity", detail: "Angle between query vector and intent vectors" },
+  { step: "06", name: "Intent Matching", detail: "Highest scoring intent is ranked first" },
+  { step: "07", name: "Confidence", detail: "Score checked against the 0.38 threshold" },
+  { step: "08", name: "Knowledge Base", detail: `${INTENT_COUNT} verified institutional intents` },
+  { step: "09", name: "Response", detail: "Rich cards, official links and source credits" },
+];
+
+const howItWorks = [
+  {
+    step: "01",
+    title: "Ask in plain language",
+    body: "Type a question the way a student actually speaks — typos, slang and abbreviations are all handled by the normalizer.",
+  },
+  {
+    step: "02",
+    title: "The NLP engine matches an intent",
+    body: "Your query is vectorized with TF-IDF and compared against every knowledge intent using cosine similarity, then gated by a confidence threshold.",
+  },
+  {
+    step: "03",
+    title: "Get a verified answer",
+    body: "You receive a structured response with official source links — or an honest fallback when the query is outside the knowledge base.",
+  },
+];
 
 export default function HomePage() {
-  const topicCards = [
-    {
-      title: "Admissions",
-      icon: GraduationCap,
-      color: "from-blue-600 to-indigo-700",
-      description: "Eligibility criteria, application procedures, and required document verification.",
-      sampleQuery: "How do I apply for BCA?",
-      badge: "Eligibility & Forms",
-    },
-    {
-      title: "Courses",
-      icon: BookOpen,
-      color: "from-emerald-600 to-teal-700",
-      description: "Undergraduate (BCA, BBA, B.Com, B.Sc) and Postgraduate (MCA, MBA, M.Com) curriculums.",
-      sampleQuery: "What courses are available at DSCASC?",
-      badge: "UG & PG Degrees",
-    },
-    {
-      title: "Academics",
-      icon: Calendar,
-      color: "from-violet-600 to-purple-700",
-      description: "Semester schedules, continuous assessments, circulars, and exam notifications.",
-      sampleQuery: "When are semester exams?",
-      badge: "Exams & Circulars",
-    },
-    {
-      title: "BCA Department",
-      icon: Laptop,
-      color: "from-sky-600 to-blue-700",
-      description: "Department leadership, SEP 2024 syllabus, class timetables, and Centers of Excellence.",
-      sampleQuery: "Where can I find the BCA timetable?",
-      badge: "Timetable & Syllabus",
-    },
-    {
-      title: "Fees & Quotas",
-      icon: Coins,
-      color: "from-amber-600 to-yellow-700",
-      description: "Official fee guidelines, merit/management quotas, and state scholarship assistance.",
-      sampleQuery: "What is BCA fee?",
-      badge: "Official Guidance",
-    },
-    {
-      title: "Placements",
-      icon: Rocket,
-      color: "from-rose-600 to-pink-700",
-      description: "Verified statistics: 300 companies, 8 LPA highest package, placement cell contact.",
-      sampleQuery: "What is the placement record of DSCASC?",
-      badge: "Verified Statistics",
-    },
-    {
-      title: "Contact & Campus",
-      icon: PhoneCall,
-      color: "from-slate-700 to-slate-900",
-      description: "Campus location at Kumaraswamy Layout, official admissions numbers, and office emails.",
-      sampleQuery: "How do I contact DSCASC?",
-      badge: "Official Office",
-    },
-  ];
-
-  const quickQuestions = [
-    "How can I apply for BCA?",
-    "What courses does DSCASC offer?",
-    "Where can I find the BCA timetable?",
-    "What is the placement record?",
-    "What is the highest package?",
-    "How do I contact the college?",
-  ];
-
   return (
-    <div className="relative overflow-hidden">
-      {/* Background Subtle Gradient Blobs */}
-      <div className="absolute top-0 left-1/2 -z-10 h-[500px] w-full max-w-7xl -translate-x-1/2 overflow-hidden blur-3xl opacity-20 pointer-events-none">
-        <div className="aspect-1155/678 w-[72rem] bg-gradient-to-tr from-dsc-blue to-dsc-navy" />
-      </div>
-
-      {/* Hero Section */}
-      <section className="mx-auto max-w-7xl px-4 pt-12 pb-16 sm:px-6 sm:pt-20 lg:px-8">
-        <div className="text-center">
-          {/* Institutional Badge */}
-          <div className="inline-flex items-center gap-2 rounded-full border border-blue-200 bg-blue-50/80 px-3.5 py-1.5 text-xs font-semibold text-dsc-navy shadow-2xs backdrop-blur-sm mb-6">
-            <span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span>Dayananda Sagar College of Arts, Science & Commerce</span>
-            <span className="text-slate-400">&bull;</span>
-            <span className="text-dsc-blue">Bangalore University</span>
-          </div>
-
-          <h1 className="mx-auto max-w-4xl text-4xl font-extrabold tracking-tight text-slate-900 sm:text-6xl sm:leading-tight">
-            Your DSCASC questions.{" "}
-            <span className="bg-gradient-to-r from-dsc-navy via-dsc-blue to-dsc-maroon bg-clip-text text-transparent">
-              Answered instantly.
+    <div className="overflow-x-hidden">
+      {/* ============================= HERO ============================= */}
+      <section className="relative border-b-2 border-black bg-white">
+        <div
+          className="dot-grid-black pointer-events-none absolute inset-0 opacity-60"
+          aria-hidden="true"
+        />
+        <div className="relative mx-auto grid max-w-7xl grid-cols-1 gap-10 px-4 py-12 sm:px-6 sm:py-16 lg:grid-cols-12 lg:gap-8 lg:px-8 lg:py-24">
+          {/* Left: editorial copy */}
+          <div className="lg:col-span-7">
+            <span className="brutal-tag">
+              <span className="h-2 w-2 border border-black bg-black" aria-hidden="true" />
+              Dayananda Sagar College &bull; Bangalore University
             </span>
-          </h1>
 
-          <p className="mx-auto mt-6 max-w-2xl text-base text-slate-600 sm:text-lg">
-            Ask about admissions, courses, academics, timetables, syllabus, verified placement statistics, and official student services.
-          </p>
+            <h1 className="mt-6 font-display text-4xl font-extrabold leading-[0.98] tracking-tight text-brand-charcoal sm:text-6xl lg:text-7xl">
+              Your DSCASC questions.
+              <span className="mt-2 block w-fit bg-brand-yellow px-2 py-1.5 leading-[0.95]">
+                Answered instantly.
+              </span>
+            </h1>
 
-          <div className="mt-4 inline-flex items-center gap-2 text-xs font-medium text-slate-500">
-            <Cpu className="h-3.5 w-3.5 text-dsc-blue" />
-            <span>Powered by explainable NLP-based intent matching &bull; TF-IDF & Cosine Similarity</span>
-          </div>
+            <p className="mt-6 max-w-xl text-base font-medium leading-relaxed text-slate-700 sm:text-lg">
+              Ask about admissions, every UG &amp; PG program — BCA, BBA, B.Com, B.Sc, MCA, MBA,
+              M.Com — plus academics, placements and student services.
+            </p>
 
-          {/* Primary & Secondary CTAs */}
-          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
-            <Link
-              href="/chat"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl bg-dsc-navy px-6 py-3.5 text-sm font-bold text-white shadow-md transition-all hover:bg-dsc-blue hover:shadow-lg active:scale-98"
-            >
-              <MessageSquare className="h-4 w-4 text-dsc-gold" />
-              <span>Start Chatting</span>
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-
-            <a
-              href="#topics"
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-6 py-3.5 text-sm font-semibold text-slate-700 shadow-2xs transition-all hover:border-slate-300 hover:bg-slate-50"
-            >
-              <span>Explore Topics</span>
-            </a>
-          </div>
-
-          {/* Quick interactive questions bar */}
-          <div className="mx-auto mt-10 max-w-3xl">
-            <div className="mb-2.5 text-xs font-semibold text-slate-400 uppercase tracking-wider">
-              Try Asking
+            <div className="mt-4 flex items-start gap-2 border-l-4 border-black bg-brand-sage-light py-2 pl-3">
+              <Cpu className="mt-0.5 h-4 w-4 shrink-0 text-black" aria-hidden="true" />
+              <p className="text-xs font-semibold leading-relaxed text-brand-charcoal sm:text-sm">
+                Powered by explainable NLP-based intent matching — TF-IDF vectorization and cosine
+                similarity, running fully in your browser.
+              </p>
             </div>
-            <div className="flex flex-wrap items-center justify-center gap-2">
-              {quickQuestions.map((q, idx) => (
-                <Link
-                  key={idx}
-                  href={`/chat?q=${encodeURIComponent(q)}`}
-                  className="rounded-full border border-slate-200 bg-white/90 px-3.5 py-1.5 text-xs font-medium text-slate-700 shadow-2xs transition-all hover:border-dsc-blue hover:text-dsc-blue hover:bg-blue-50/50"
-                >
-                  &ldquo;{q}&rdquo;
-                </Link>
-              ))}
+
+            {/* CTAs */}
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+              <Link href="/chat" className="brutal-btn brutal-btn-primary w-full text-base sm:w-auto">
+                <MessageSquare className="h-4 w-4" aria-hidden="true" />
+                Start Chatting
+                <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              </Link>
+              <a href="#topics" className="brutal-btn w-full text-base sm:w-auto">
+                Explore Topics
+              </a>
+            </div>
+
+            {/* Quick questions */}
+            <div className="mt-10">
+              <div className="mb-3 text-[11px] font-extrabold uppercase tracking-widest text-slate-500">
+                Try asking
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {quickQuestions.map((q) => (
+                  <Link
+                    key={q}
+                    href={`/chat?q=${encodeURIComponent(q)}`}
+                    className="brutal-chip"
+                  >
+                    <Sparkles className="h-3 w-3 text-brand-charcoal" aria-hidden="true" />
+                    &ldquo;{q}&rdquo;
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Right: visual NLP composition */}
+          <div className="lg:col-span-5">
+            <div className="relative mx-auto max-w-md space-y-4 lg:space-y-0">
+              {/* Query card */}
+              <div className="rotate-[-1.5deg] border-2 border-black bg-brand-charcoal p-4 shadow-brutal-lg">
+                <div className="mb-2 flex items-center justify-between">
+                  <span className="text-[10px] font-extrabold uppercase tracking-widest text-brand-yellow">
+                    Student Query
+                  </span>
+                  <span className="border border-white/40 px-1.5 text-[9px] font-bold uppercase tracking-wider text-brand-sage">
+                    Raw input
+                  </span>
+                </div>
+                <p className="font-mono text-sm text-white">&ldquo;whn is bca tymtable&rdquo;</p>
+              </div>
+
+              {/* Pipeline card */}
+              <div className="rotate-[1deg] border-2 border-black bg-white p-4 shadow-brutal-lg sm:-mt-2 lg:-mt-3 lg:ml-6">
+                <div className="mb-3 flex items-center justify-between">
+                  <span className="text-[10px] font-extrabold uppercase tracking-widest text-brand-charcoal">
+                    NLP Pipeline
+                  </span>
+                  <span className="brutal-tag !px-1.5 !py-0.5 !text-[9px]">Live</span>
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {["normalize", "tokenize", "stopwords", "tf-idf", "cosine", "rank"].map((step, i) => (
+                    <React.Fragment key={step}>
+                      <span className="border-2 border-black bg-brand-sage-light px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-brand-charcoal">
+                        {step}
+                      </span>
+                      {i < 5 && (
+                        <span className="self-center text-[10px] font-black text-black" aria-hidden="true">
+                          &rarr;
+                        </span>
+                      )}
+                    </React.Fragment>
+                  ))}
+                </div>
+                <div className="mt-3 border-t-2 border-black pt-2">
+                  <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wider text-slate-600">
+                    <span>Cosine score</span>
+                    <span className="font-mono">0.94 &ge; 0.38</span>
+                  </div>
+                  <div className="mt-1.5 h-3 w-full border-2 border-black bg-white">
+                    <div className="h-full w-[94%] bg-brand-yellow" />
+                  </div>
+                </div>
+              </div>
+
+              {/* Result card */}
+              <div className="rotate-[-0.75deg] border-2 border-black bg-brand-yellow p-4 shadow-brutal-lg sm:-mt-2 lg:-mt-4 lg:ml-2">
+                <div className="mb-1 text-[10px] font-extrabold uppercase tracking-widest text-black">
+                  Matched Intent
+                </div>
+                <div className="font-mono text-lg font-black text-black">bca_timetable</div>
+                <div className="mt-2 flex items-center gap-1.5 text-[11px] font-bold text-black">
+                  <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" />
+                  Verified answer with official source link
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Topic Cards Section */}
-      <section id="topics" className="border-t border-slate-200/80 bg-white py-16">
+      {/* ============================= TRUST STRIP ============================= */}
+      <section className="border-b-2 border-black bg-brand-charcoal" aria-label="Project facts">
+        <div className="mx-auto flex max-w-7xl flex-wrap items-center justify-center gap-x-6 gap-y-2 px-4 py-3 text-center sm:px-6 lg:px-8">
+          {[
+            `${INTENT_COUNT} Verified Intents`,
+            "Full Test Suite Passing",
+            "TF-IDF + Cosine Similarity",
+            "0.38 Confidence Threshold",
+            "Zero External APIs",
+          ].map((fact, idx) => (
+            <React.Fragment key={fact}>
+              {idx > 0 && (
+                <span className="hidden h-3 w-0.5 bg-brand-yellow sm:block" aria-hidden="true" />
+              )}
+              <span className="text-[11px] font-extrabold uppercase tracking-widest text-white">
+                {fact}
+              </span>
+            </React.Fragment>
+          ))}
+        </div>
+      </section>
+
+      {/* ============================= EXPLORE DSCASC ============================= */}
+      <section
+        id="explore"
+        className="border-b-2 border-black bg-brand-sage-light py-16 sm:py-20"
+        aria-labelledby="explore-heading"
+      >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10">
-            <div>
-              <div className="text-xs font-bold uppercase tracking-wider text-dsc-blue">
-                Curated Knowledge Base
-              </div>
-              <h2 className="mt-1 text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-                Explore College Knowledge Areas
-              </h2>
-            </div>
-            <p className="mt-2 sm:mt-0 text-xs sm:text-sm text-slate-500 max-w-md">
-              40+ verified intents covering Dayananda Sagar College of Arts, Science and Commerce student services.
-            </p>
+          <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+            <SectionHeading
+              kicker="Explore DSCASC"
+              title={
+                <span id="explore-heading">
+                  The whole college.
+                  <br className="hidden sm:block" /> One assistant.
+                </span>
+              }
+              description="DSCASC AI covers every officially listed undergraduate and postgraduate program at Dayananda Sagar College of Arts, Science and Commerce. Pick a program — it opens the chatbot with a real question."
+            />
+            <Link
+              href="/chat"
+              className="brutal-btn brutal-btn-dark shrink-0 self-start md:self-auto"
+            >
+              Ask about a program
+              <ArrowRight className="h-4 w-4" aria-hidden="true" />
+            </Link>
           </div>
 
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {topicCards.map((card, idx) => {
+          <div className="stagger mt-10 grid grid-cols-1 gap-5 md:grid-cols-2">
+            {explorePrograms.map((group) => (
+              <div
+                key={group.level}
+                className="brutal-card flex flex-col p-5"
+                aria-label={`${group.level} programs`}
+              >
+                <div className="flex items-center justify-between gap-3 border-b-2 border-black pb-3">
+                  <div className="flex items-center gap-2.5">
+                    <span
+                      className={`flex h-9 items-center justify-center border-2 border-black ${group.color} px-2 font-display text-xs font-black uppercase text-black shadow-brutal-sm`}
+                    >
+                      {group.badge}
+                    </span>
+                    <h3 className="font-display text-lg font-extrabold text-brand-charcoal">
+                      {group.level}
+                    </h3>
+                  </div>
+                  <span className="text-[10px] font-extrabold uppercase tracking-widest text-slate-500">
+                    {group.items.length} programs
+                  </span>
+                </div>
+
+                <ul className="mt-4 flex flex-col gap-2.5">
+                  {group.items.map((program) => (
+                    <li key={program.abbr}>
+                      <Link
+                        href={`/chat?q=${encodeURIComponent(`Tell me about ${program.abbr}`)}`}
+                        className="group flex items-center justify-between gap-3 border-2 border-black bg-white px-3 py-2.5 shadow-brutal-sm transition-all duration-150 hover:-translate-y-0.5 hover:shadow-brutal focus-visible:-translate-y-0.5"
+                      >
+                        <span className="flex min-w-0 items-baseline gap-2.5">
+                          <span className="font-display text-sm font-black tracking-tight text-brand-charcoal">
+                            {program.abbr}
+                          </span>
+                          <span className="truncate text-xs font-medium text-slate-600">
+                            {program.name}
+                          </span>
+                        </span>
+                        <ArrowRight
+                          className="h-3.5 w-3.5 shrink-0 text-black transition-transform duration-150 group-hover:translate-x-1"
+                          aria-hidden="true"
+                        />
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+
+                <p className="mt-4 border-t-2 border-dashed border-black/20 pt-3 text-[11px] font-semibold text-slate-500">
+                  {group.note} &middot; affiliated with Bangalore University. Details link to official
+                  DSCASC sources.
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ============================= TOPIC CARDS ============================= */}
+      <section id="topics" className="border-b-2 border-black bg-white py-16 sm:py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+            <SectionHeading
+              kicker="Curated knowledge base"
+              title={
+                <>
+                  Explore college
+                  <br className="hidden sm:block" /> knowledge areas
+                </>
+              }
+              description={`${INTENT_COUNT} verified intents covering Dayananda Sagar College of Arts, Science and Commerce student services — from admissions and every UG & PG program to placements. Pick a card — it opens the chatbot with a real question.`}
+            />
+            <Link
+              href="/chat"
+              className="brutal-btn shrink-0 self-start md:self-auto"
+            >
+              Open full assistant
+              <ArrowRight className="h-4 w-4" aria-hidden="true" />
+            </Link>
+          </div>
+
+          <div className="stagger mt-10 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {topicCards.map((card) => {
               const Icon = card.icon;
               return (
                 <Link
-                  key={idx}
+                  key={card.title}
                   href={`/chat?q=${encodeURIComponent(card.sampleQuery)}`}
-                  className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200 bg-slate-50/60 p-6 transition-all hover:border-dsc-blue/50 hover:bg-white hover:shadow-md"
+                  className="brutal-card-interactive group flex h-full flex-col justify-between p-5"
                 >
                   <div>
-                    <div className="flex items-center justify-between mb-4">
-                      <div className={`flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${card.color} text-white shadow-xs group-hover:scale-105 transition-transform`}>
-                        <Icon className="h-6 w-6" />
-                      </div>
-                      <span className="rounded-full bg-slate-200/70 px-2.5 py-0.5 text-[10px] font-bold text-slate-600">
+                    <div className="flex items-start justify-between gap-3">
+                      <span
+                        className={`flex h-12 w-12 items-center justify-center border-2 border-black ${card.color} text-xl shadow-brutal-sm transition-transform duration-150 group-hover:-translate-y-0.5`}
+                        aria-hidden="true"
+                      >
+                        <span>{card.emoji}</span>
+                      </span>
+                      <span className="border-2 border-black bg-white px-2 py-1 text-[9px] font-extrabold uppercase tracking-wider text-brand-charcoal">
                         {card.badge}
                       </span>
                     </div>
 
-                    <h3 className="text-lg font-bold text-slate-900 group-hover:text-dsc-blue transition-colors">
+                    <h3 className="mt-4 font-display text-xl font-extrabold text-brand-charcoal">
                       {card.title}
                     </h3>
-                    <p className="mt-2 text-xs leading-relaxed text-slate-600">
+                    <p className="mt-1.5 text-sm leading-relaxed text-slate-600">
                       {card.description}
                     </p>
                   </div>
 
-                  <div className="mt-5 border-t border-slate-200/60 pt-3 flex items-center justify-between text-xs font-medium text-dsc-blue">
-                    <span className="italic truncate pr-2 text-slate-500 group-hover:text-dsc-navy">
+                  <div className="mt-5 flex items-center justify-between gap-2 border-t-2 border-black pt-3">
+                    <span className="truncate text-xs font-semibold italic text-slate-500">
                       &ldquo;{card.sampleQuery}&rdquo;
                     </span>
-                    <ArrowRight className="h-3.5 w-3.5 flex-shrink-0 group-hover:translate-x-1 transition-transform" />
+                    <span className="flex h-7 w-7 shrink-0 items-center justify-center border-2 border-black bg-brand-yellow transition-transform duration-150 group-hover:translate-x-1">
+                      <ArrowRight className="h-3.5 w-3.5 text-black" aria-hidden="true" />
+                    </span>
                   </div>
                 </Link>
               );
             })}
+
+            {/* Filler tile keeps the 3-column grid balanced */}
+            <div className="hidden flex-col justify-between border-2 border-dashed border-black bg-brand-sage-light p-5 lg:flex">
+              <div>
+                <span className="flex h-12 w-12 items-center justify-center border-2 border-black bg-white text-xl shadow-brutal-sm" aria-hidden="true">
+                  <MessageSquare className="h-6 w-6 text-black" />
+                </span>
+                <h3 className="mt-4 font-display text-xl font-extrabold text-brand-charcoal">
+                  Something else?
+                </h3>
+                <p className="mt-1.5 text-sm leading-relaxed text-slate-600">
+                  Ask the assistant directly — unrecognized queries fall back safely instead of
+                  guessing.
+                </p>
+              </div>
+              <Link href="/chat" className="brutal-btn brutal-btn-dark mt-5 w-full">
+                Ask a question
+                <ChevronRight className="h-4 w-4" aria-hidden="true" />
+              </Link>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* How it Works / NLP Architecture Section */}
-      <section className="bg-slate-50 border-t border-slate-200 py-16">
+      {/* ============================= NLP PIPELINE ============================= */}
+      <section className="on-dark border-b-2 border-black bg-brand-charcoal py-16 sm:py-20">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-12">
-            <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-bold text-dsc-blue">
-              Academic AI Architecture
-            </span>
-            <h2 className="mt-3 text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-              Transparent, Explainable NLP Engine
-            </h2>
-            <p className="mt-2 text-sm text-slate-600">
-              Unlike black-box generative models, DSCASC AI utilizes an explainable mathematical pipeline designed for academic viva evaluation.
-            </p>
-          </div>
+          <SectionHeading
+            tone="dark"
+            align="center"
+            kicker="Powered by NLP-based intent matching"
+            title="One query. Nine stages. Zero guesswork."
+            description="Every student question travels through the same transparent, mathematically explainable pipeline — no black-box model, no fabricated answers."
+          />
 
-          {/* Visual Step-by-Step Flow */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-2xs">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-dsc-blue font-bold text-sm mb-3">
-                1
-              </div>
-              <h4 className="font-bold text-slate-900 text-sm">Normalization & Tokens</h4>
-              <p className="mt-1 text-xs text-slate-500 leading-relaxed">
-                Cleans query text, handles typos (e.g. <em>tymtable &rarr; timetable</em>), strips punctuation, and builds unigrams and bigrams.
-              </p>
-            </div>
+          <ol className="stagger mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {pipelineStages.map((stage, idx) => (
+              <li
+                key={stage.step}
+                className="relative border-2 border-black bg-white p-4 shadow-brutal"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="flex h-9 w-9 items-center justify-center border-2 border-black bg-brand-yellow font-display text-sm font-black text-black">
+                    {stage.step}
+                  </span>
+                  {idx < pipelineStages.length - 1 && (
+                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">
+                      next &rarr;
+                    </span>
+                  )}
+                </div>
+                <h3 className="mt-3 font-display text-base font-extrabold text-brand-charcoal">
+                  {stage.name}
+                </h3>
+                <p className="mt-1 text-xs leading-relaxed text-slate-600">{stage.detail}</p>
+              </li>
+            ))}
+          </ol>
 
-            <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-2xs">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-dsc-blue font-bold text-sm mb-3">
-                2
-              </div>
-              <h4 className="font-bold text-slate-900 text-sm">TF-IDF Vectorization</h4>
-              <p className="mt-1 text-xs text-slate-500 leading-relaxed">
-                Weights terms by Term Frequency &amp; Inverse Document Frequency with Laplace smoothing and L2 Euclidean normalization.
-              </p>
-            </div>
-
-            <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-2xs">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-dsc-blue font-bold text-sm mb-3">
-                3
-              </div>
-              <h4 className="font-bold text-slate-900 text-sm">Cosine Similarity</h4>
-              <p className="mt-1 text-xs text-slate-500 leading-relaxed">
-                Calculates geometric angle between normalized vectors &bull; cos(&theta;) = q &bull; d, ranking intent candidates.
-              </p>
-            </div>
-
-            <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-2xs">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-dsc-blue font-bold text-sm mb-3">
-                4
-              </div>
-              <h4 className="font-bold text-slate-900 text-sm">Confidence & Fallback</h4>
-              <p className="mt-1 text-xs text-slate-500 leading-relaxed">
-                Checks against configurable threshold (38%). Retrieves rich verified cards or safely delivers a structured fallback.
-              </p>
-            </div>
-          </div>
-
-          <div className="mt-10 text-center">
-            <Link
-              href="/about"
-              className="inline-flex items-center gap-1.5 text-xs font-bold text-dsc-blue hover:text-dsc-navy hover:underline"
-            >
-              <span>Explore the deep mathematical formulas & interactive pipeline tester</span>
-              <ArrowRight className="h-3.5 w-3.5" />
+          <div className="mt-10 flex flex-col items-center justify-center gap-3 text-center sm:flex-row">
+            <Link href="/about" className="brutal-btn brutal-btn-primary">
+              See the full methodology
+              <ArrowRight className="h-4 w-4" aria-hidden="true" />
+            </Link>
+            <Link href="/chat" className="brutal-btn bg-white">
+              Test it in the chat
             </Link>
           </div>
+        </div>
+      </section>
+
+      {/* ============================= HOW IT WORKS ============================= */}
+      <section className="border-b-2 border-black bg-brand-sage-light py-16 sm:py-20">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <SectionHeading
+            kicker="How it works"
+            title="Understand it in 10 seconds"
+            description="Three steps from a student's question to a verified, sourced answer."
+          />
+
+          <div className="stagger mt-10 grid grid-cols-1 gap-6 md:grid-cols-3">
+            {howItWorks.map((item) => (
+              <div key={item.step} className="relative border-2 border-black bg-white p-6 shadow-brutal">
+                <span className="font-display text-5xl font-extrabold leading-none text-brand-charcoal [-webkit-text-stroke:5px_#FFE17C]">
+                  {item.step}
+                </span>
+                <h3 className="mt-4 font-display text-lg font-extrabold text-brand-charcoal">
+                  {item.title}
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-slate-600">{item.body}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ============================= CTA ============================= */}
+      <section className="relative overflow-hidden border-b-2 border-black bg-brand-yellow">
+        <div className="dot-grid-black pointer-events-none absolute inset-0 opacity-50" aria-hidden="true" />
+        <div className="relative mx-auto flex max-w-7xl flex-col items-start gap-6 px-4 py-14 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
+          <div>
+            <h2 className="font-display text-3xl font-extrabold leading-tight text-black sm:text-4xl">
+              Ready to ask your DSCASC question?
+            </h2>
+            <p className="mt-2 max-w-xl text-sm font-semibold text-black/70 sm:text-base">
+              No login, no waiting queues — the assistant answers instantly with official source
+              references.
+            </p>
+          </div>
+          <Link href="/chat" className="brutal-btn brutal-btn-dark w-full text-base sm:w-auto">
+            <MessageSquare className="h-4 w-4 text-brand-yellow" aria-hidden="true" />
+            Start Chatting
+            <ArrowRight className="h-4 w-4" aria-hidden="true" />
+          </Link>
         </div>
       </section>
     </div>

@@ -13,18 +13,18 @@ export const SuggestionCard: React.FC<SuggestionCardProps> = ({
   if (!suggestions || suggestions.length === 0) return null;
 
   return (
-    <div className="mt-3 pt-2">
-      <div className="mb-1.5 flex items-center gap-1 text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
-        <MessageSquarePlus className="h-3 w-3 text-dsc-blue" />
-        <span>Suggested Questions</span>
+    <div className="mt-3 border-t-2 border-dashed border-black pt-3">
+      <div className="mb-2 flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-widest text-slate-500">
+        <MessageSquarePlus className="h-3 w-3" aria-hidden="true" />
+        <span>Suggested questions</span>
       </div>
-      <div className="flex flex-wrap gap-1.5">
-        {suggestions.map((suggestion, idx) => (
+      <div className="flex flex-wrap gap-2">
+        {suggestions.map((suggestion) => (
           <button
-            key={idx}
+            key={suggestion}
             type="button"
             onClick={() => onSelectSuggestion(suggestion)}
-            className="rounded-full border border-blue-200 bg-white px-3 py-1 text-xs font-medium text-dsc-blue transition-all hover:border-dsc-navy hover:bg-blue-50 active:scale-95 cursor-pointer shadow-2xs text-left"
+            className="brutal-chip"
           >
             {suggestion}
           </button>

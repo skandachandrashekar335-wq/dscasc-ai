@@ -8,3 +8,4 @@ out/
 dist/
 dist-electron/
 .vercel
+*.tsbuildinfo

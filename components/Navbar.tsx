@@ -3,7 +3,15 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { GraduationCap, MessageSquare, Briefcase, Info, Menu, X, ExternalLink, Sparkles } from "lucide-react";
+import {
+  GraduationCap,
+  MessageSquare,
+  Briefcase,
+  Info,
+  Menu,
+  X,
+  ExternalLink,
+} from "lucide-react";
 
 export const Navbar: React.FC = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -11,34 +19,40 @@ export const Navbar: React.FC = () => {
 
   const navLinks = [
     { href: "/", label: "Home", icon: GraduationCap },
-    { href: "/chat", label: "Chat Assistant", icon: MessageSquare, badge: "NLP" },
+    { href: "/chat", label: "Chat", icon: MessageSquare, badge: "NLP" },
     { href: "/placements", label: "Placements", icon: Briefcase },
     { href: "/about", label: "How It Works", icon: Info },
   ];
 
   return (
-    <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/90 backdrop-blur-md">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8 h-16">
-        {/* Logo and Brand */}
-        <Link href="/" className="flex items-center gap-2.5 group">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-linear-to-br from-dsc-navy to-dsc-blue text-white shadow-xs group-hover:scale-105 transition-transform">
-            <GraduationCap className="h-5 w-5 text-dsc-gold" />
-          </div>
-          <div>
-            <div className="flex items-center gap-1.5 font-extrabold text-dsc-navy tracking-tight text-base sm:text-lg">
-              <span>DSCASC AI</span>
-              <span className="rounded-full bg-blue-100 px-1.5 py-0.5 text-[10px] font-bold text-dsc-blue">
-                BCA AI
-              </span>
-            </div>
-            <div className="text-[10px] font-medium text-slate-500 hidden sm:block">
-              Dayananda Sagar College of Arts, Science & Commerce
-            </div>
-          </div>
+    <header className="sticky top-0 z-50 border-b-2 border-black bg-white">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
+        {/* Brand */}
+        <Link
+          href="/"
+          className="group flex shrink-0 items-center gap-2.5"
+        >
+          <span className="flex h-10 w-10 items-center justify-center border-2 border-black bg-brand-charcoal shadow-brutal-sm transition-all duration-150 group-hover:bg-brand-yellow group-active:translate-x-[2px] group-active:translate-y-[2px] group-active:shadow-brutal-none">
+            <GraduationCap
+              className="h-5 w-5 text-brand-yellow transition-colors group-hover:text-black"
+              aria-hidden="true"
+            />
+          </span>
+          <span className="flex flex-col leading-none">
+            <span className="font-display text-lg font-extrabold tracking-tight text-brand-charcoal">
+              DSCASC AI
+            </span>
+            <span className="mt-0.5 hidden text-[10px] font-bold uppercase tracking-widest text-slate-500 sm:block lg:hidden xl:block">
+              Student Guidance Assistant
+            </span>
+          </span>
+          <span className="ml-1 hidden border-2 border-black bg-brand-yellow px-1.5 py-0.5 text-[9px] font-extrabold uppercase tracking-wider text-black md:inline-block">
+            UG + PG
+          </span>
         </Link>
 
-        {/* Desktop Navigation Links */}
-        <nav className="hidden md:flex items-center gap-1">
+        {/* Desktop navigation */}
+        <nav className="hidden items-center gap-1 lg:flex" aria-label="Primary">
           {navLinks.map((link) => {
             const Icon = link.icon;
             const isActive = pathname === link.href;
@@ -46,16 +60,21 @@ export const Navbar: React.FC = () => {
               <Link
                 key={link.href}
                 href={link.href}
-                className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                aria-current={isActive ? "page" : undefined}
+                className={`flex items-center gap-1.5 whitespace-nowrap border-2 px-2.5 py-2 text-[11px] font-extrabold uppercase tracking-wide transition-all duration-150 ${
                   isActive
-                    ? "bg-blue-50 text-dsc-blue shadow-xs"
-                    : "text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+                    ? "border-black bg-brand-charcoal text-white shadow-brutal-sm"
+                    : "border-transparent text-brand-charcoal hover:border-black hover:bg-brand-yellow hover:text-black"
                 }`}
               >
-                <Icon className={`h-3.5 w-3.5 ${isActive ? "text-dsc-blue" : "text-slate-400"}`} />
+                <Icon className="h-3.5 w-3.5" aria-hidden="true" />
                 <span>{link.label}</span>
                 {link.badge && (
-                  <span className="rounded-full bg-dsc-gold/20 px-1.5 py-0.2 text-[9px] font-bold text-dsc-gold">
+                  <span
+                    className={`border border-current px-1 text-[8px] font-black ${
+                      isActive ? "text-brand-yellow" : "text-brand-charcoal"
+                    }`}
+                  >
                     {link.badge}
                   </span>
                 )}
@@ -63,36 +82,48 @@ export const Navbar: React.FC = () => {
             );
           })}
 
-          <div className="ml-2 h-4 w-px bg-slate-200" />
+          <span className="mx-2 h-6 w-0.5 bg-black" aria-hidden="true" />
+
+          <Link href="/chat" className="brutal-btn brutal-btn-primary brutal-btn-sm">
+            <MessageSquare className="h-3.5 w-3.5" aria-hidden="true" />
+            Start Chatting
+          </Link>
 
           <a
             href="https://www.dscasc.edu.in/"
             target="_blank"
             rel="noopener noreferrer"
-            className="ml-2 flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-medium text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-50"
+            className="ml-1 hidden xl:flex items-center gap-1 border-2 border-black bg-white px-2.5 py-2 text-[11px] font-bold uppercase tracking-wider text-brand-charcoal shadow-brutal-sm transition-all duration-150 hover:bg-brand-sage hover:translate-x-[1px] hover:translate-y-[1px] hover:shadow-brutal-none"
           >
             <span>Official Portal</span>
-            <ExternalLink className="h-3 w-3 text-slate-400" />
+            <ExternalLink className="h-3 w-3" aria-hidden="true" />
           </a>
         </nav>
 
         {/* Mobile menu button */}
-        <div className="flex md:hidden">
-          <button
-            type="button"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="rounded-lg p-2 text-slate-600 hover:bg-slate-100"
-            aria-label="Toggle navigation menu"
-          >
-            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={() => setMobileMenuOpen((open) => !open)}
+          className="brutal-btn brutal-btn-sm lg:hidden"
+          aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+          aria-expanded={mobileMenuOpen}
+        >
+          {mobileMenuOpen ? (
+            <X className="h-4 w-4" aria-hidden="true" />
+          ) : (
+            <Menu className="h-4 w-4" aria-hidden="true" />
+          )}
+        </button>
       </div>
 
-      {/* Mobile Drawer */}
+      {/* Mobile drawer */}
       {mobileMenuOpen && (
-        <div className="border-b border-slate-200 bg-white px-4 pt-2 pb-4 md:hidden animate-slide-up">
-          <nav className="flex flex-col gap-1.5">
+        <div
+          className="border-t-2 border-black bg-white px-4 pb-4 pt-3 animate-slide-up lg:hidden"
+          role="navigation"
+          aria-label="Mobile"
+        >
+          <div className="flex flex-col gap-2">
             {navLinks.map((link) => {
               const Icon = link.icon;
               const isActive = pathname === link.href;
@@ -101,18 +132,21 @@ export const Navbar: React.FC = () => {
                   key={link.href}
                   href={link.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className={`flex items-center justify-between rounded-lg px-3 py-2 text-sm font-medium ${
-                    isActive
-                      ? "bg-blue-50 text-dsc-blue font-bold"
-                      : "text-slate-700 hover:bg-slate-100"
+                  aria-current={isActive ? "page" : undefined}
+                  className={`flex items-center justify-between border-2 border-black px-3 py-2.5 text-sm font-extrabold uppercase tracking-wider transition-colors ${
+                    isActive ? "bg-brand-charcoal text-white" : "bg-white text-brand-charcoal"
                   }`}
                 >
-                  <div className="flex items-center gap-2">
-                    <Icon className="h-4 w-4" />
+                  <span className="flex items-center gap-2">
+                    <Icon className="h-4 w-4" aria-hidden="true" />
                     <span>{link.label}</span>
-                  </div>
+                  </span>
                   {link.badge && (
-                    <span className="rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-bold text-dsc-blue">
+                    <span
+                      className={`border px-1.5 py-0.5 text-[9px] font-black ${
+                        isActive ? "border-white text-brand-yellow" : "border-black bg-brand-yellow text-black"
+                      }`}
+                    >
                       {link.badge}
                     </span>
                   )}
@@ -120,16 +154,25 @@ export const Navbar: React.FC = () => {
               );
             })}
 
+            <Link
+              href="/chat"
+              onClick={() => setMobileMenuOpen(false)}
+              className="brutal-btn brutal-btn-primary mt-1 w-full"
+            >
+              <MessageSquare className="h-4 w-4" aria-hidden="true" />
+              Start Chatting
+            </Link>
+
             <a
               href="https://www.dscasc.edu.in/"
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-2 flex items-center justify-between rounded-lg border border-slate-200 p-2 text-xs font-medium text-slate-700"
+              className="flex items-center justify-between border-2 border-black bg-brand-sage px-3 py-2.5 text-xs font-extrabold uppercase tracking-wider text-brand-charcoal"
             >
               <span>Visit Official DSCASC Portal</span>
-              <ExternalLink className="h-3.5 w-3.5 text-slate-400" />
+              <ExternalLink className="h-4 w-4" aria-hidden="true" />
             </a>
-          </nav>
+          </div>
         </div>
       )}
     </header>

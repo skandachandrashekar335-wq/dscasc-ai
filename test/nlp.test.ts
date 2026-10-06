@@ -218,4 +218,136 @@ describe("DSCASC AI - NLP Pipeline Unit Tests", () => {
       expect(KNOWLEDGE_BASE.length).toBeGreaterThanOrEqual(20);
     });
   });
+
+  describe("College-wide course coverage", () => {
+    it("should map the flagship programs query to courses_available", () => {
+      const res = matchUserQuery("What courses does DSCASC offer?");
+      expect(res.isConfident).toBe(true);
+      expect(res.detectedIntentId).toBe("courses_available");
+    });
+
+    it("should map every officially listed program to its own course intent", () => {
+      const expectations: Array<[string, string]> = [
+        ["Tell me about BCA", "bca_information"],
+        ["Tell me about BBA", "bba_information"],
+        ["Tell me about B.Com", "bcom_information"],
+        ["Tell me about B.Sc", "bsc_information"],
+        ["Does DSCASC offer MCA?", "mca_information"],
+        ["Does DSCASC have MCA?", "mca_information"],
+        ["Tell me about MBA", "mba_information"],
+        ["Tell me about M.Com", "mcom_information"],
+      ];
+      for (const [query, intentId] of expectations) {
+        const res = matchUserQuery(query);
+        expect(res.isConfident, `${query} should be confident`).toBe(true);
+        expect(res.detectedIntentId, query).toBe(intentId);
+      }
+    });
+
+    it("should answer \"what is <program>\" for every program", () => {
+      const expectations: Array<[string, string]> = [
+        ["What is BCA?", "bca_information"],
+        ["What is BBA?", "bba_information"],
+        ["What is B.Com?", "bcom_information"],
+        ["What is B.Sc?", "bsc_information"],
+        ["What is MCA?", "mca_information"],
+        ["What is MBA?", "mba_information"],
+        ["What is M.Com?", "mcom_information"],
+      ];
+      for (const [query, intentId] of expectations) {
+        const res = matchUserQuery(query);
+        expect(res.isConfident, `${query} should be confident`).toBe(true);
+        expect(res.detectedIntentId, query).toBe(intentId);
+      }
+    });
+
+    it("should distinguish UG and PG listing queries from single-course queries", () => {
+      const pg = matchUserQuery("What postgraduate courses are available?");
+      expect(pg.isConfident).toBe(true);
+      expect(pg.detectedIntentId).toBe("courses_available");
+
+      const ug = matchUserQuery("What undergraduate courses are available?");
+      expect(ug.isConfident).toBe(true);
+      expect(ug.detectedIntentId).toBe("courses_available");
+    });
+
+    it("should handle misspelled course and eligibility queries", () => {
+      expect(matchUserQuery("bba eligibilty").detectedIntentId).toBe("eligibility");
+      expect(matchUserQuery("does dscasc have bsc").detectedIntentId).toBe("bsc_information");
+      expect(matchUserQuery("tell me about mcom").detectedIntentId).toBe("mcom_information");
+      expect(matchUserQuery("bba timtable").detectedIntentId).toBe("timetable");
+      expect(matchUserQuery("whn is bca tymtable").detectedIntentId).toBe("bca_timetable");
+    });
+
+    it("should map college-wide queries to their correct intents", () => {
+      const expectations: Array<[string, string]> = [
+        ["What are the admission requirements?", "admission_process"],
+        ["What documents are required?", "documents_required"],
+        ["How do I apply?", "admission_process"],
+        ["What are the fees?", "fee_information"],
+        ["What is the eligibility for MBA?", "eligibility"],
+        ["Where is DSCASC?", "college_location"],
+        ["What facilities does the college have?", "facilities"],
+        ["How can I contact DSCASC?", "contact_information"],
+        ["What is the placement process?", "placement_process"],
+        ["Which companies recruit?", "placement_companies"],
+        ["Does DSCASC provide internships?", "internship_information"],
+        ["What clubs are there?", "clubs_activities"],
+        ["Are scholarships available?", "scholarship_information"],
+      ];
+      for (const [query, intentId] of expectations) {
+        const res = matchUserQuery(query);
+        expect(res.isConfident, `${query} should be confident`).toBe(true);
+        expect(res.detectedIntentId, query).toBe(intentId);
+      }
+    });
+
+    it("should still trigger fallback for unrelated queries", () => {
+      const res = matchUserQuery("zzzz qqqq nonsense about pizza");
+      expect(res.isConfident).toBe(false);
+      expect(res.detectedIntentId).toBe("unknown");
+    });
+
+    it("should contain all seven course intents with official source metadata", () => {
+      const courseIntentIds = [
+        "bca_information",
+        "bba_information",
+        "bcom_information",
+        "bsc_information",
+        "mca_information",
+        "mba_information",
+        "mcom_information",
+      ];
+      for (const id of courseIntentIds) {
+        const intent = KNOWLEDGE_BASE.find((i) => i.id === id);
+        expect(intent, `${id} should exist`).toBeTruthy();
+        expect(intent!.response.source?.url, `${id} source url`).toContain("dscasc.edu.in");
+        expect(intent!.response.source?.lastVerified, `${id} lastVerified`).toBeTruthy();
+        expect(intent!.response.links?.length ?? 0, `${id} official links`).toBeGreaterThan(0);
+      }
+    });
+
+    it("should list all verified programs and the official skill courses", () => {
+      const intent = KNOWLEDGE_BASE.find((i) => i.id === "courses_available");
+      expect(intent).toBeTruthy();
+      const text = intent!.response.text;
+      for (const program of ["BCA", "BBA", "B.Com", "B.Sc", "MCA", "MBA", "M.Com"]) {
+        expect(text, `programs list should mention ${program}`).toContain(program);
+      }
+      expect(text).toContain("Tally");
+      expect(text).toContain("AWS Cloud Practitioner");
+      // Unverified claims must not appear
+      expect(text).not.toContain("Data Analytics");
+      expect(text).not.toContain("accredited");
+    });
+
+    it("should keep every factual intent sourced", () => {
+      const conversational = new Set(["greeting", "thanks", "help", "goodbye", "unknown"]);
+      for (const intent of KNOWLEDGE_BASE) {
+        if (conversational.has(intent.id)) continue;
+        expect(intent.response.source?.url, `${intent.id} source`).toBeTruthy();
+        expect(intent.response.source?.lastVerified, `${intent.id} lastVerified`).toBeTruthy();
+      }
+    });
+  });
 });

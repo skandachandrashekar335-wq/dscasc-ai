@@ -3,20 +3,71 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import {
-  Cpu,
-  Layers,
-  Activity,
-  CheckCircle,
   AlertTriangle,
-  ArrowDown,
-  BookOpen,
-  Code2,
-  Sliders,
-  Sparkles,
   ArrowRight,
   Calculator,
+  CheckCircle,
+  Cpu,
+  HelpCircle,
 } from "lucide-react";
-import { matchUserQuery, normalizeText, tokenize, removeStopwords, MatchResult } from "@/lib/nlp";
+import {
+  matchUserQuery,
+  MatchResult,
+} from "@/lib/nlp";
+import { SectionHeading } from "@/components/ui/SectionHeading";
+
+const pipelineSteps = [
+  { step: "01", name: "Student Query", detail: "Raw natural-language input typed by the student" },
+  { step: "02", name: "Normalization", detail: "Lowercase, punctuation strip, typo & slang repair" },
+  { step: "03", name: "Tokenization", detail: "Unigrams plus composite bigram features" },
+  { step: "04", name: "Stopword Handling", detail: "Filters grammatical noise, keeps domain terms" },
+  { step: "05", name: "TF-IDF", detail: "Weighted term vectors, L2 normalized" },
+  { step: "06", name: "Cosine Similarity", detail: "Angle between query vector and every intent" },
+  { step: "07", name: "Intent Matching", detail: "Candidates ranked by descending score" },
+  { step: "08", name: "Confidence", detail: "Top score tested against threshold τ = 0.38" },
+  { step: "09", name: "Knowledge Base", detail: "Matched intent retrieves verified content" },
+  { step: "10", name: "Response", detail: "Structured answer, official links & suggestions" },
+];
+
+const deepDiveStages = [
+  {
+    n: "01",
+    title: "Text Normalization & Noise Cleaning",
+    body: (
+      <>
+        Real student queries contain typographical noise, abbreviations, and informal slang (e.g.
+        <em> &ldquo;whn is bca tymtable&rdquo;</em>). The normalizer applies lowercasing, expands
+        contractions, maps common academic slang (<em>tymtable &rarr; timetable, placment &rarr;
+        placement</em>), normalizes academic acronyms (<em>b.c.a &rarr; bca</em>), and removes
+        extraneous punctuation while keeping alphanumeric tokens.
+      </>
+    ),
+  },
+  {
+    n: "02",
+    title: "Tokenization & Composite Bigrams",
+    body: (
+      <>
+        Splits text into discrete word tokens. In addition to individual unigrams, it generates
+        composite bigram features (e.g. <em>highest_package</em>, <em>placement_record</em>,{" "}
+        <em>bca_timetable</em>). This preserves multi-word semantics that a pure bag-of-words
+        representation would lose.
+      </>
+    ),
+  },
+  {
+    n: "03",
+    title: "Stopword Filtering",
+    body: (
+      <>
+        Filters non-informative grammatical noise particles (<em>&ldquo;a&rdquo;, &ldquo;the&rdquo;,
+        &ldquo;is&rdquo;, &ldquo;for&rdquo;, &ldquo;of&rdquo;</em>) while preserving crucial question
+        discriminators. If an entire input consists of words in the stopword list, the system
+        preserves tokens so greetings and help requests are processed properly.
+      </>
+    ),
+  },
+];
 
 export default function AboutPage() {
   const [testQuery, setTestQuery] = useState("When are BCA exams?");
@@ -40,292 +91,385 @@ export default function AboutPage() {
   ];
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-      {/* Header */}
-      <div className="text-center max-w-3xl mx-auto mb-16">
-        <span className="rounded-full bg-blue-100 px-3.5 py-1 text-xs font-bold text-dsc-blue">
-          Academic AI Assignment &bull; BCA Semester III
-        </span>
-        <h1 className="mt-4 text-3xl sm:text-5xl font-extrabold text-slate-900 tracking-tight">
-          How DSCASC AI Works
-        </h1>
-        <p className="mt-3 text-base text-slate-600">
-          A transparent, mathematically grounded NLP intent matching pipeline built with TypeScript, TF-IDF vectorization, and Cosine Similarity.
-        </p>
-      </div>
-
-      {/* Academic Problem Statement & Proposed Solution */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
-        <div className="rounded-2xl border border-rose-100 bg-rose-50/50 p-6 shadow-2xs">
-          <div className="flex items-center gap-2 mb-3 text-rose-800 font-bold">
-            <AlertTriangle className="h-5 w-5" />
-            <span>The Academic Problem</span>
-          </div>
-          <p className="text-sm text-slate-700 leading-relaxed">
-            College administrative offices and department faculty receive hundreds of repetitive student questions regarding admissions, timetables, syllabus documents, examination schedules, fees, and placements. Students frequently face delays during peak admission and exam cycles.
-          </p>
-        </div>
-
-        <div className="rounded-2xl border border-emerald-100 bg-emerald-50/50 p-6 shadow-2xs">
-          <div className="flex items-center gap-2 mb-3 text-emerald-800 font-bold">
-            <CheckCircle className="h-5 w-5" />
-            <span>The NLP Solution</span>
-          </div>
-          <p className="text-sm text-slate-700 leading-relaxed">
-            DSCASC AI deploys an explainable NLP intent-matching architecture. Student queries in varying natural language forms are normalized, vectorized into high-dimensional TF-IDF space, compared via cosine angle against verified DSCASC knowledge intents, and answered instantly with official source references.
-          </p>
-        </div>
-      </div>
-
-      {/* Interactive Live Pipeline Demonstration (Viva Showstopper) */}
-      <div className="mb-16 rounded-2xl border border-slate-200 bg-white p-6 sm:p-8 shadow-xs">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
-          <div>
-            <div className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-dsc-blue">
-              <Calculator className="h-4 w-4" />
-              <span>Interactive Pipeline Inspector (Viva Tool)</span>
-            </div>
-            <h2 className="text-2xl font-black text-slate-900 tracking-tight">
-              Test Any Query Step-by-Step
-            </h2>
-          </div>
-          <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">
-            Real-time execution: {pipelineAnalysis?.executionTimeMs ?? 0} ms
+    <div className="overflow-x-hidden">
+      {/* ============================= HEADER ============================= */}
+      <section className="relative border-b-2 border-black bg-brand-charcoal">
+        <div className="dot-grid-dark pointer-events-none absolute inset-0" aria-hidden="true" />
+        <div className="relative mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-16 lg:px-8">
+          <span className="brutal-tag">
+            <Cpu className="h-3.5 w-3.5" aria-hidden="true" />
+            Academic AI Assignment &bull; BCA Semester III
           </span>
+
+          <h1 className="mt-5 max-w-4xl font-display text-4xl font-extrabold leading-[1.05] tracking-tight text-white sm:text-5xl lg:text-6xl">
+            How DSCASC AI{" "}
+            <span className="mt-2 block w-fit bg-brand-yellow px-2 py-1.5 leading-[0.95] text-black">
+              actually works
+            </span>
+          </h1>
+
+          <p className="mt-5 max-w-3xl text-sm leading-relaxed text-brand-sage sm:text-base">
+            A transparent, mathematically grounded NLP intent matching pipeline built with
+            TypeScript, TF-IDF vectorization, and Cosine Similarity — no black-box model, no
+            external APIs.
+          </p>
         </div>
+      </section>
 
-        {/* Input box */}
-        <div className="flex flex-col sm:flex-row gap-2 mb-4">
-          <input
-            type="text"
-            value={testQuery}
-            onChange={(e) => handleTestQuery(e.target.value)}
-            placeholder="Type a student query to inspect mathematical transformation..."
-            className="flex-1 rounded-xl border border-slate-300 bg-slate-50 px-4 py-2.5 text-sm font-medium focus:border-dsc-blue focus:bg-white focus:outline-none"
-          />
-          <button
-            type="button"
-            onClick={() => handleTestQuery(testQuery)}
-            className="rounded-xl bg-dsc-navy px-5 py-2.5 text-xs font-bold text-white hover:bg-dsc-blue transition-colors cursor-pointer"
-          >
-            Inspect Step-by-Step
-          </button>
-        </div>
-
-        {/* Quick test pills */}
-        <div className="flex flex-wrap gap-2 mb-8">
-          <span className="text-xs text-slate-400 self-center">Presets:</span>
-          {sampleQueries.map((q, idx) => (
-            <button
-              key={idx}
-              type="button"
-              onClick={() => handleTestQuery(q)}
-              className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1 text-xs text-slate-700 hover:border-dsc-blue hover:text-dsc-blue cursor-pointer"
-            >
-              {q}
-            </button>
-          ))}
-        </div>
-
-        {/* Mathematical Step Visualizer */}
-        {pipelineAnalysis && (
-          <div className="space-y-4">
-            {/* Step 1 & 2 */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="rounded-xl border border-slate-100 bg-slate-50 p-4 text-xs">
-                <div className="font-bold text-slate-700 uppercase mb-1">
-                  1. Normalized Output
-                </div>
-                <div className="font-mono text-dsc-navy font-semibold">
-                  &ldquo;{pipelineAnalysis.normalizedQuery || "(empty)"}&rdquo;
-                </div>
-                <div className="mt-1 text-[11px] text-slate-500">
-                  Lowercased, punctuation stripped, slang/typos corrected.
-                </div>
-              </div>
-
-              <div className="rounded-xl border border-slate-100 bg-slate-50 p-4 text-xs">
-                <div className="font-bold text-slate-700 uppercase mb-1">
-                  2. Tokens & Bigrams
-                </div>
-                <div className="font-mono text-dsc-blue truncate" title={pipelineAnalysis.tokens.join(", ")}>
-                  [{pipelineAnalysis.tokens.join(", ")}]
-                </div>
-                <div className="mt-1 text-[11px] text-slate-500">
-                  Stopwords removed, composite bigrams added for phrase context.
-                </div>
-              </div>
-
-              <div className="rounded-xl border border-slate-100 bg-slate-50 p-4 text-xs">
-                <div className="font-bold text-slate-700 uppercase mb-1">
-                  3. Similarity Score & Decision
-                </div>
-                <div className="flex items-center gap-2 font-mono font-bold text-base">
-                  <span className={pipelineAnalysis.isConfident ? "text-emerald-700" : "text-amber-600"}>
-                    {pipelineAnalysis.confidence} ({Math.round(pipelineAnalysis.confidence * 100)}%)
-                  </span>
-                  <span className="text-xs text-slate-400 font-normal">
-                    (Threshold: {pipelineAnalysis.threshold})
-                  </span>
-                </div>
-                <div className="mt-1 text-[11px]">
-                  Status:{" "}
-                  <strong className={pipelineAnalysis.isConfident ? "text-emerald-700" : "text-amber-600"}>
-                    {pipelineAnalysis.isConfident ? "Confident Match" : "Fallback Triggered"}
-                  </strong>
-                </div>
-              </div>
+      {/* ============================= PROBLEM / SOLUTION ============================= */}
+      <section className="border-b-2 border-black bg-white py-14 sm:py-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <div className="border-2 border-black bg-white p-6 shadow-brutal">
+              <span className="flex h-10 w-10 items-center justify-center border-2 border-black bg-brand-sage shadow-brutal-sm">
+                <AlertTriangle className="h-5 w-5 text-black" aria-hidden="true" />
+              </span>
+              <h2 className="mt-4 font-display text-xl font-extrabold text-brand-charcoal">
+                The academic problem
+              </h2>
+              <p className="mt-2 text-sm leading-relaxed text-slate-600">
+                College administrative offices and department faculty receive hundreds of repetitive
+                student questions regarding admissions, timetables, syllabus documents, examination
+                schedules, fees, and placements. Students frequently face delays during peak
+                admission and exam cycles.
+              </p>
             </div>
 
-            {/* Step 3: Match Result */}
-            <div className="rounded-xl border border-blue-100 bg-blue-50/50 p-4 text-xs">
-              <div className="flex items-center justify-between mb-2">
-                <span className="font-bold text-dsc-navy">
-                  Detected Target Intent:{" "}
-                  <span className="font-mono text-dsc-blue">
-                    {pipelineAnalysis.detectedIntentId}
-                  </span>{" "}
-                  &bull; &ldquo;{pipelineAnalysis.matchedIntent.title}&rdquo;
-                </span>
-                <span className="text-slate-500 text-[11px]">
-                  Method: {pipelineAnalysis.method}
-                </span>
+            <div className="border-2 border-black bg-brand-yellow p-6 shadow-brutal">
+              <span className="flex h-10 w-10 items-center justify-center border-2 border-black bg-white shadow-brutal-sm">
+                <CheckCircle className="h-5 w-5 text-black" aria-hidden="true" />
+              </span>
+              <h2 className="mt-4 font-display text-xl font-extrabold text-black">
+                The NLP solution
+              </h2>
+              <p className="mt-2 text-sm leading-relaxed text-black/75">
+                DSCASC AI deploys an explainable NLP intent-matching architecture. Student queries in
+                varying natural language forms are normalized, vectorized into high-dimensional
+                TF-IDF space, compared via cosine angle against verified DSCASC knowledge intents,
+                and answered instantly with official source references.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ============================= LIVE INSPECTOR ============================= */}
+      <section className="border-b-2 border-black bg-brand-sage-light py-14 sm:py-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <SectionHeading
+              kicker="Interactive pipeline inspector"
+              title="Test any query, step by step"
+              description="Type a student question and watch the exact mathematical transformation the engine performs."
+            />
+            <span className="brutal-tag self-start sm:self-auto">
+              <Calculator className="h-3.5 w-3.5" aria-hidden="true" />
+              {/* Timing differs slightly between server and client render */}
+              <span suppressHydrationWarning>
+                Execution: {pipelineAnalysis?.executionTimeMs ?? 0} ms
+              </span>
+            </span>
+          </div>
+
+          <div className="mt-8 border-2 border-black bg-white shadow-brutal-lg">
+            <div className="brutal-strip">
+              <span className="text-[11px] font-extrabold uppercase tracking-widest">
+                Live NLP Inspector
+              </span>
+              <span className="hidden text-[10px] font-bold text-brand-sage sm:inline">
+                Runs entirely in your browser
+              </span>
+            </div>
+
+            <div className="p-4 sm:p-6">
+              {/* Input */}
+              <div className="flex flex-col gap-3 sm:flex-row">
+                <label htmlFor="pipeline-query" className="sr-only">
+                  Query to inspect
+                </label>
+                <input
+                  id="pipeline-query"
+                  type="text"
+                  value={testQuery}
+                  onChange={(e) => handleTestQuery(e.target.value)}
+                  placeholder="Type a student query to inspect mathematical transformation..."
+                  className="brutal-input flex-1"
+                />
+                <button
+                  type="button"
+                  onClick={() => handleTestQuery(testQuery)}
+                  className="brutal-btn brutal-btn-primary shrink-0"
+                >
+                  Inspect step-by-step
+                  <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                </button>
               </div>
 
-              {pipelineAnalysis.alternatives.length > 0 && (
-                <div className="border-t border-blue-200/60 pt-2">
-                  <div className="font-semibold text-slate-700 mb-1">Candidate Intent Ranking:</div>
-                  <div className="flex flex-wrap gap-2">
-                    {pipelineAnalysis.alternatives.map((alt, idx) => (
-                      <span
-                        key={idx}
-                        className="rounded bg-white px-2 py-1 text-[11px] border border-blue-200 font-mono"
+              {/* Presets */}
+              <div className="mt-4 flex flex-wrap gap-2">
+                <span className="self-center text-[10px] font-extrabold uppercase tracking-widest text-slate-500">
+                  Presets:
+                </span>
+                {sampleQueries.map((q) => (
+                  <button
+                    key={q}
+                    type="button"
+                    onClick={() => handleTestQuery(q)}
+                    className="brutal-chip"
+                  >
+                    {q}
+                  </button>
+                ))}
+              </div>
+
+              {/* Stage outputs */}
+              {pipelineAnalysis && (
+                <div className="mt-6 space-y-4">
+                  <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                    <div className="border-2 border-black bg-brand-sage-light p-3.5">
+                      <div className="text-[10px] font-extrabold uppercase tracking-widest text-slate-600">
+                        01 &bull; Normalized output
+                      </div>
+                      <div className="mt-1.5 break-words font-mono text-sm font-bold text-brand-charcoal">
+                        &ldquo;{pipelineAnalysis.normalizedQuery || "(empty)"}&rdquo;
+                      </div>
+                      <div className="mt-1.5 text-[11px] text-slate-600">
+                        Lowercased, punctuation stripped, slang/typos corrected.
+                      </div>
+                    </div>
+
+                    <div className="border-2 border-black bg-white p-3.5">
+                      <div className="text-[10px] font-extrabold uppercase tracking-widest text-slate-600">
+                        02 &bull; Tokens &amp; bigrams
+                      </div>
+                      <div
+                        className="mt-1.5 break-words font-mono text-sm font-bold text-brand-charcoal"
+                        title={pipelineAnalysis.tokens.join(", ")}
                       >
-                        {alt.title}: {alt.score}
+                        [{pipelineAnalysis.tokens.join(", ")}]
+                      </div>
+                      <div className="mt-1.5 text-[11px] text-slate-600">
+                        Stopwords removed, composite bigrams added for phrase context.
+                      </div>
+                    </div>
+
+                    <div className="border-2 border-black bg-brand-yellow p-3.5">
+                      <div className="text-[10px] font-extrabold uppercase tracking-widest text-black/70">
+                        03 &bull; Score &amp; decision
+                      </div>
+                      <div className="mt-1.5 flex flex-wrap items-center gap-2 font-mono font-black text-black">
+                        <span className="text-base">
+                          {pipelineAnalysis.confidence} (
+                          {Math.round(pipelineAnalysis.confidence * 100)}%)
+                        </span>
+                        <span className="text-xs font-bold text-black/60">
+                          threshold {pipelineAnalysis.threshold}
+                        </span>
+                      </div>
+                      <div className="mt-1.5 text-[11px] font-bold text-black">
+                        Status:{" "}
+                        {pipelineAnalysis.isConfident ? "Confident match" : "Fallback triggered"}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Match result */}
+                  <div className="border-2 border-black bg-brand-charcoal p-4">
+                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                      <span className="text-xs font-bold text-white">
+                        Detected target intent:{" "}
+                        <span className="font-mono font-black text-brand-yellow">
+                          {pipelineAnalysis.detectedIntentId}
+                        </span>{" "}
+                        &bull; &ldquo;{pipelineAnalysis.matchedIntent.title}&rdquo;
                       </span>
-                    ))}
+                      <span className="text-[11px] font-semibold text-brand-sage">
+                        Method: {pipelineAnalysis.method}
+                      </span>
+                    </div>
+
+                    {pipelineAnalysis.alternatives.length > 0 && (
+                      <div className="mt-3 border-t-2 border-white/20 pt-3">
+                        <div className="mb-2 text-[10px] font-extrabold uppercase tracking-widest text-brand-yellow">
+                          Candidate intent ranking
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {pipelineAnalysis.alternatives.map((alt) => (
+                            <span
+                              key={alt.id}
+                              className="border-2 border-black bg-white px-2 py-1 font-mono text-[11px] font-bold text-brand-charcoal"
+                            >
+                              {alt.title}: {alt.score}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      </section>
 
-      {/* Deep Mathematical Pipeline Explanation */}
-      <div className="mb-16">
-        <div className="text-center mb-10">
-          <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
-            The 8-Stage NLP Pipeline Architecture
+      {/* ============================= 10-STEP PIPELINE ============================= */}
+      <section className="on-dark border-b-2 border-black bg-brand-charcoal py-14 sm:py-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <SectionHeading
+            tone="dark"
+            align="center"
+            kicker="System architecture"
+            title="The 10-stage NLP pipeline"
+            description="From raw student input to a verified answer — every stage is deterministic, testable and explainable."
+          />
+
+          <ol className="stagger mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+            {pipelineSteps.map((item, idx) => (
+              <li key={item.step} className="border-2 border-black bg-white p-4 shadow-brutal">
+                <div className="flex items-center justify-between">
+                  <span className="flex h-9 w-9 items-center justify-center border-2 border-black bg-brand-yellow font-display text-sm font-black text-black">
+                    {item.step}
+                  </span>
+                  {idx < pipelineSteps.length - 1 && (
+                    <ArrowRight className="h-4 w-4 text-slate-300" aria-hidden="true" />
+                  )}
+                </div>
+                <h3 className="mt-3 font-display text-sm font-extrabold uppercase tracking-wide text-brand-charcoal">
+                  {item.name}
+                </h3>
+                <p className="mt-1 text-xs leading-relaxed text-slate-600">{item.detail}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      {/* ============================= DEEP DIVE ============================= */}
+      <section className="border-b-2 border-black bg-white py-14 sm:py-16">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <SectionHeading
+            kicker="Deep dive"
+            title="The mathematics behind each stage"
+            description="Viva-ready explanations of the pipeline components, formulas and guardrails."
+          />
+
+          <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-3">
+            {deepDiveStages.map((stage) => (
+              <div key={stage.n} className="border-2 border-black bg-white p-5 shadow-brutal">
+                <h3 className="flex items-center gap-2 font-display text-sm font-extrabold text-brand-charcoal">
+                  <span className="flex h-7 w-7 items-center justify-center border-2 border-black bg-brand-yellow text-xs font-black">
+                    {stage.n}
+                  </span>
+                  {stage.title}
+                </h3>
+                <p className="mt-3 text-xs leading-relaxed text-slate-600">{stage.body}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Formulas */}
+          <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
+            <div className="border-2 border-black bg-brand-sage-light p-5 shadow-brutal">
+              <h3 className="font-display text-sm font-extrabold uppercase tracking-wider text-brand-charcoal">
+                04 &bull; TF-IDF vectorization
+              </h3>
+              <div className="mt-3 overflow-x-auto border-2 border-black bg-white p-3 font-mono text-[11px] leading-relaxed text-brand-charcoal sm:text-xs">
+                TF(t, d) = count(t, d) / total_terms(d)
+                <br />
+                IDF(t) = ln((1 + N) / (1 + DF(t))) + 1 &nbsp;[Laplace smoothing]
+                <br />
+                Weight(t, d) = TF(t, d) * IDF(t)
+                <br />
+                ||v|| = 1 &nbsp;(L2 normalization)
+              </div>
+              <p className="mt-3 text-xs leading-relaxed text-slate-600">
+                Every document is mapped onto the unit sphere so vector magnitude is normalized and
+                only direction (angle) drives similarity.
+              </p>
+            </div>
+
+            <div className="border-2 border-black bg-brand-sage-light p-5 shadow-brutal">
+              <h3 className="font-display text-sm font-extrabold uppercase tracking-wider text-brand-charcoal">
+                05 &bull; Cosine similarity
+              </h3>
+              <div className="mt-3 overflow-x-auto border-2 border-black bg-white p-3 font-mono text-[11px] leading-relaxed text-brand-charcoal sm:text-xs">
+                Cosine Similarity = (q &bull; d) / (||q|| * ||d||) = &Sigma;(q_i * d_i)
+                <br />
+                Decision: confident if max_score &ge; &tau; = 0.38
+              </div>
+              <p className="mt-3 text-xs leading-relaxed text-slate-600">
+                Because vectors are pre-normalized, the calculation reduces to a fast dot product
+                across overlapping dimensions.
+              </p>
+            </div>
+          </div>
+
+          {/* Confidence & fallback */}
+          <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
+            <div className="border-2 border-black bg-brand-yellow p-5 shadow-brutal">
+              <h3 className="flex items-center gap-2 font-display text-sm font-extrabold uppercase tracking-wider text-black">
+                <Calculator className="h-4 w-4" aria-hidden="true" />
+                06 &bull; Confidence threshold
+              </h3>
+              <p className="mt-2 text-xs leading-relaxed text-black/75">
+                A configurable confidence threshold (&tau; = 0.38) prevents false positive
+                hallucinations. If the highest cosine score falls below &tau;, the assistant
+                acknowledges uncertainty instead of guessing.
+              </p>
+              <div className="mt-3 border-2 border-black bg-white p-3 font-mono text-xs font-bold text-brand-charcoal">
+                confident &hArr; score &ge; 0.38
+              </div>
+            </div>
+
+            <div className="border-2 border-black bg-white p-5 shadow-brutal">
+              <h3 className="flex items-center gap-2 font-display text-sm font-extrabold uppercase tracking-wider text-brand-charcoal">
+                <HelpCircle className="h-4 w-4" aria-hidden="true" />
+                07 &bull; Knowledge base &amp; fallback
+              </h3>
+              <p className="mt-2 text-xs leading-relaxed text-slate-600">
+                A confident match retrieves a curated intent containing the response text, highlights,
+                official links, contact details and source credits. An unmatched query returns the
+                structured fallback intent, which explains the limitation and offers working
+                suggestions.
+              </p>
+              <div className="mt-3 flex flex-wrap gap-2">
+                <span className="border-2 border-black bg-brand-sage-light px-2 py-1 text-[11px] font-bold">
+                  39 curated intents
+                </span>
+                <span className="border-2 border-black bg-brand-sage-light px-2 py-1 text-[11px] font-bold">
+                  23/23 unit tests
+                </span>
+                <span className="border-2 border-black bg-brand-sage-light px-2 py-1 text-[11px] font-bold">
+                  Zero external APIs
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ============================= CTA ============================= */}
+      <section className="relative overflow-hidden border-b-2 border-black bg-brand-yellow">
+        <div className="dot-grid-black pointer-events-none absolute inset-0 opacity-50" aria-hidden="true" />
+        <div className="relative mx-auto max-w-7xl px-4 py-14 text-center sm:px-6 lg:px-8">
+          <h2 className="font-display text-3xl font-extrabold tracking-tight text-black sm:text-4xl">
+            Experience the chatbot in action
           </h2>
-          <p className="mt-1 text-sm text-slate-500">
-            Viva-ready explanation of each mathematical component
+          <p className="mx-auto mt-2 max-w-xl text-sm font-semibold text-black/70">
+            Test the NLP pipeline with real admissions, timetable, placement, or examination queries.
           </p>
-        </div>
-
-        <div className="space-y-6 max-w-4xl mx-auto">
-          {/* Stage 1 */}
-          <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-2xs">
-            <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 text-dsc-blue text-xs font-bold">1</span>
-              <span>Text Normalization & Noise Cleaning</span>
-            </h3>
-            <p className="mt-2 text-xs text-slate-600 leading-relaxed">
-              Real student queries contain typographical noise, abbreviations, and informal slang (e.g. <em>&ldquo;whn is bca tymtable&rdquo;</em>). The normalizer applies lowercasing, expands contractions, maps common academic slang (<em>tymtable &rarr; timetable, placment &rarr; placement</em>), normalizes academic acronyms (<em>b.c.a &rarr; bca</em>), and removes extraneous punctuation while keeping alphanumeric tokens.
-            </p>
-          </div>
-
-          {/* Stage 2 */}
-          <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-2xs">
-            <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 text-dsc-blue text-xs font-bold">2</span>
-              <span>Tokenization & Composite Bigrams</span>
-            </h3>
-            <p className="mt-2 text-xs text-slate-600 leading-relaxed">
-              Splits text into discrete word tokens. In addition to individual unigrams, it generates composite bigram features (e.g., <em>highest_package</em>, <em>placement_record</em>, <em>bca_timetable</em>). This preserves multi-word semantics that a pure bag-of-words representation would lose.
-            </p>
-          </div>
-
-          {/* Stage 3 */}
-          <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-2xs">
-            <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 text-dsc-blue text-xs font-bold">3</span>
-              <span>Stopwords Filtering</span>
-            </h3>
-            <p className="mt-2 text-xs text-slate-600 leading-relaxed">
-              Filters non-informative grammatical noise particles (<em>&ldquo;a&rdquo;, &ldquo;the&rdquo;, &ldquo;is&rdquo;, &ldquo;for&rdquo;, &ldquo;of&rdquo;</em>) while preserving crucial question discriminators. If an entire input consists of words in the stopword list (e.g., <em>&ldquo;hello&rdquo;, &ldquo;help&rdquo;</em>), the system preserves tokens so greetings and help requests are processed properly.
-            </p>
-          </div>
-
-          {/* Stage 4 */}
-          <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-2xs">
-            <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 text-dsc-blue text-xs font-bold">4</span>
-              <span>TF-IDF Vectorization</span>
-            </h3>
-            <p className="mt-2 text-xs text-slate-600 leading-relaxed">
-              Computes the numerical importance of each term within the institutional corpus:
-            </p>
-            <div className="my-2 rounded bg-slate-50 p-2.5 font-mono text-[11px] text-slate-700">
-              TF(t, d) = count(t, d) / total_terms(d)
-              <br />
-              IDF(t) = ln((1 + N) / (1 + DF(t))) + 1 &nbsp; [Laplace Smoothing]
-              <br />
-              Weight(t, d) = TF(t, d) * IDF(t)
-            </div>
-            <p className="text-xs text-slate-600 leading-relaxed">
-              Vectors are then mapped onto an L2 Euclidean unit sphere so vector magnitude is normalized: ||v|| = 1.
-            </p>
-          </div>
-
-          {/* Stage 5 */}
-          <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-2xs">
-            <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 text-dsc-blue text-xs font-bold">5</span>
-              <span>Cosine Similarity Geometric Angle</span>
-            </h3>
-            <p className="mt-2 text-xs text-slate-600 leading-relaxed">
-              Measures similarity between query vector q and intent candidate vector d as the cosine of the angle between them:
-            </p>
-            <div className="my-2 rounded bg-slate-50 p-2.5 font-mono text-[11px] text-slate-700">
-              Cosine Similarity = (q &bull; d) / (||q|| * ||d||) = &Sigma;(q_i * d_i)
-            </div>
-            <p className="text-xs text-slate-600 leading-relaxed">
-              Because vectors are pre-normalized, the calculation is reduced to a fast dot product across non-zero overlapping dimensions.
-            </p>
-          </div>
-
-          {/* Stage 6 */}
-          <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-2xs">
-            <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
-              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 text-dsc-blue text-xs font-bold">6</span>
-              <span>Confidence Threshold &amp; Fallback Handling</span>
-            </h3>
-            <p className="mt-2 text-xs text-slate-600 leading-relaxed">
-              A configurable confidence threshold ($\tau = 0.38$) prevents false positive hallucinations. If the highest cosine score is below $\tau$, the assistant acknowledges uncertainty and triggers the Fallback Intent, guiding the user with suggested topics rather than guessing.
-            </p>
+          <div className="mt-6 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            <Link href="/chat" className="brutal-btn brutal-btn-dark w-full text-base sm:w-auto">
+              Launch chat assistant
+              <ArrowRight className="h-4 w-4" aria-hidden="true" />
+            </Link>
+            <Link href="/" className="brutal-btn w-full bg-white text-base sm:w-auto">
+              Back to home
+            </Link>
           </div>
         </div>
-      </div>
-
-      {/* Call to action */}
-      <div className="rounded-2xl bg-dsc-navy p-8 text-center text-white">
-        <h3 className="text-2xl font-extrabold tracking-tight">
-          Experience the Chatbot in Action
-        </h3>
-        <p className="mt-2 text-sm text-blue-200 max-w-xl mx-auto">
-          Test the NLP pipeline with real admissions, timetable, placement, or examination queries.
-        </p>
-        <div className="mt-6">
-          <Link
-            href="/chat"
-            className="inline-flex items-center gap-2 rounded-xl bg-dsc-gold px-6 py-3 text-sm font-bold text-dsc-navy hover:bg-yellow-400 transition-colors shadow-md"
-          >
-            <span>Launch Chat Assistant</span>
-            <ArrowRight className="h-4 w-4" />
-          </Link>
-        </div>
-      </div>
+      </section>
     </div>
   );
 }

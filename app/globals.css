@@ -3,41 +3,201 @@
 @tailwind utilities;
 
 :root {
-  --primary-navy: #1a2c4e;
-  --secondary-blue: #2b4b7c;
-  --accent-gold: #c59b27;
-  --heritage-maroon: #8c1d2f;
+  --brand-yellow: #ffe17c;
+  --brand-charcoal: #171e19;
+  --brand-sage: #b7c6c2;
+  --brand-black: #000000;
 }
 
-body {
-  color: #1e293b;
-  background-color: #f8fafc;
-  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+/* ------------------------------------------------------------------ */
+/* Base                                                                */
+/* ------------------------------------------------------------------ */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    color: #171e19;
+    background-color: #ffffff;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+    overflow-x: hidden;
+  }
+
+  /* Strong, obvious keyboard focus everywhere */
+  :focus-visible {
+    outline: 3px solid #171e19;
+    outline-offset: 2px;
+  }
+
+  .on-dark :focus-visible {
+    outline-color: var(--brand-yellow);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display), var(--font-body), ui-sans-serif, system-ui, sans-serif;
+    letter-spacing: -0.02em;
+  }
+
+  ::selection {
+    background: var(--brand-yellow);
+    color: #000000;
+  }
+
+  /* Custom scrollbar — crisp, no blur */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #f1f5f9;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #171e19;
+    border: 2px solid #f1f5f9;
+    border-radius: 0;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #000000;
+  }
 }
 
-/* Custom scrollbar for modern chat experience */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+/* ------------------------------------------------------------------ */
+/* Components                                                          */
+/* ------------------------------------------------------------------ */
+@layer components {
+  /* ---------- Physical button system ---------- */
+  .brutal-btn {
+    @apply inline-flex select-none items-center justify-center gap-2 border-2 border-black bg-white px-5 py-3 text-sm font-bold text-brand-charcoal shadow-brutal transition-all duration-150 ease-out;
+    will-change: transform;
+  }
+  .brutal-btn:hover {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0px #000000;
+  }
+  .brutal-btn:active {
+    transform: translate(4px, 4px);
+    box-shadow: 0px 0px 0px #000000;
+  }
+  .brutal-btn:disabled {
+    @apply cursor-not-allowed opacity-50;
+    transform: none;
+    box-shadow: 4px 4px 0px #000000;
+  }
+
+  .brutal-btn-primary {
+    @apply bg-brand-yellow text-black;
+  }
+  .brutal-btn-dark {
+    @apply bg-brand-charcoal text-white;
+  }
+  .brutal-btn-sm {
+    @apply px-3 py-2 text-xs;
+  }
+
+  /* ---------- Surfaces ---------- */
+  .brutal-card {
+    @apply border-2 border-black bg-white shadow-brutal;
+  }
+  .brutal-card-lg {
+    @apply border-2 border-black bg-white shadow-brutal-lg;
+  }
+  .brutal-card-interactive {
+    @apply brutal-card transition-all duration-150 ease-out;
+  }
+  .brutal-card-interactive:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0px #000000;
+  }
+  .brutal-card-interactive:active {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0px #000000;
+  }
+
+  /* ---------- Labels / tags ---------- */
+  .brutal-tag {
+    @apply inline-flex items-center gap-1.5 border-2 border-black bg-brand-yellow px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-widest text-black;
+  }
+  .brutal-tag-light {
+    @apply inline-flex items-center gap-1.5 border-2 border-black bg-white px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-widest text-brand-charcoal;
+  }
+
+  /* ---------- Chips (suggestions, queries, recruiters) ---------- */
+  .brutal-chip {
+    @apply inline-flex items-center gap-1.5 border-2 border-black bg-white px-3 py-1.5 text-left text-xs font-semibold text-brand-charcoal shadow-brutal-sm transition-all duration-150;
+  }
+  .brutal-chip:hover {
+    @apply bg-brand-yellow;
+    transform: translate(1px, 1px);
+    box-shadow: 1px 1px 0px #000000;
+  }
+  .brutal-chip:active {
+    transform: translate(2px, 2px);
+    box-shadow: 0px 0px 0px #000000;
+  }
+
+  /* ---------- Card header strip (rich response cards) ---------- */
+  .brutal-strip {
+    @apply flex items-center justify-between gap-2 border-b-2 border-black bg-brand-charcoal px-3.5 py-2 text-brand-yellow;
+  }
+
+  /* ---------- Input system ---------- */
+  .brutal-input {
+    @apply w-full border-2 border-black bg-white px-4 py-3 text-sm font-medium text-brand-charcoal shadow-brutal-sm transition-all placeholder:text-slate-500 focus:shadow-brutal focus:outline-none;
+  }
+
+  /* ---------- Backgrounds ---------- */
+  .dot-grid {
+    background-image: radial-gradient(var(--brand-yellow) 1.5px, transparent 1.5px);
+    background-size: 18px 18px;
+    background-position: 0 0;
+  }
+  .dot-grid-dark {
+    background-image: radial-gradient(rgba(255, 225, 124, 0.35) 1.5px, transparent 1.5px);
+    background-size: 18px 18px;
+    background-position: 0 0;
+  }
+  .dot-grid-black {
+    background-image: radial-gradient(rgba(0, 0, 0, 0.16) 1.5px, transparent 1.5px);
+    background-size: 18px 18px;
+    background-position: 0 0;
+  }
+
+  /* ---------- Staggered entrance for grids ---------- */
+  .stagger > * {
+    animation: slideUp 0.35s ease-out both;
+  }
+  .stagger > *:nth-child(1) { animation-delay: 0.02s; }
+  .stagger > *:nth-child(2) { animation-delay: 0.06s; }
+  .stagger > *:nth-child(3) { animation-delay: 0.1s; }
+  .stagger > *:nth-child(4) { animation-delay: 0.14s; }
+  .stagger > *:nth-child(5) { animation-delay: 0.18s; }
+  .stagger > *:nth-child(6) { animation-delay: 0.22s; }
+  .stagger > *:nth-child(7) { animation-delay: 0.26s; }
+  .stagger > *:nth-child(8) { animation-delay: 0.3s; }
 }
 
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 9999px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
-}
-
-/* Glassmorphism utility */
-.glass-panel {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(226, 232, 240, 0.8);
+/* ------------------------------------------------------------------ */
+/* Accessibility: respect reduced motion                              */
+/* ------------------------------------------------------------------ */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .brutal-btn:hover,
+  .brutal-card-interactive:hover,
+  .brutal-chip:hover {
+    transform: none;
+  }
 }

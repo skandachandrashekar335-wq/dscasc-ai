@@ -1,5 +1,5 @@
 import React from "react";
-import { Bot, User, Sparkles } from "lucide-react";
+import { Bot, User, GraduationCap } from "lucide-react";
 import { IntentResponse } from "@/lib/knowledgeBase";
 import { MatchResult } from "@/lib/nlp";
 import { InformationCard } from "./cards/InformationCard";
@@ -16,6 +16,8 @@ export interface MessageItem {
   responseMetadata?: IntentResponse;
   analysis?: MatchResult;
   timestamp: string;
+  /** Marks the initial greeting so the UI can render the empty-state identity block. */
+  kind?: "welcome";
 }
 
 interface ChatMessageProps {
@@ -30,18 +32,24 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
   showAiAnalysisAlways = false,
 }) => {
   const isUser = message.sender === "user";
+  const isWelcome = message.kind === "welcome";
 
   if (isUser) {
     return (
-      <div className="flex justify-end mb-4 animate-fade-in">
-        <div className="flex max-w-[85%] sm:max-w-[75%] items-start gap-2.5 flex-row-reverse">
-          <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-dsc-navy text-white shadow-xs">
-            <User className="h-4 w-4" />
+      <div className="mb-4 flex animate-slide-in-right justify-end">
+        <div className="flex max-w-[85%] items-start gap-2.5 sm:max-w-[75%]">
+          <div className="flex-1 rounded-none border-2 border-black bg-brand-charcoal px-4 py-3 text-white shadow-brutal-sm">
+            <p className="whitespace-pre-wrap text-sm leading-relaxed">{message.text}</p>
+            <div className="mt-1.5 text-right text-[10px] font-bold uppercase tracking-wider text-brand-sage">
+              {message.timestamp}
+            </div>
           </div>
-          <div className="rounded-2xl rounded-tr-xs bg-dsc-navy px-4 py-2.5 text-white shadow-xs">
-            <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.text}</p>
-            <div className="mt-1 text-right text-[10px] text-blue-200">{message.timestamp}</div>
-          </div>
+          <span
+            className="flex h-8 w-8 shrink-0 items-center justify-center border-2 border-black bg-brand-yellow shadow-brutal-sm"
+            aria-hidden="true"
+          >
+            <User className="h-4 w-4 text-black" />
+          </span>
         </div>
       </div>
     );
@@ -50,62 +58,75 @@ export const ChatMessage: React.FC<ChatMessageProps> = ({
   const res = message.responseMetadata;
 
   return (
-    <div className="flex justify-start mb-4 animate-fade-in">
-      <div className="flex max-w-[95%] sm:max-w-[85%] md:max-w-[80%] items-start gap-2.5">
-        <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-linear-to-br from-dsc-blue to-dsc-navy text-white shadow-xs ring-2 ring-blue-100">
-          <Bot className="h-4 w-4 text-white" />
-        </div>
+    <div className="mb-4 flex animate-fade-in justify-start">
+      <div className="flex w-full max-w-[95%] items-start gap-2.5 sm:max-w-[88%] md:max-w-[80%]">
+        <span
+          className="flex h-8 w-8 shrink-0 items-center justify-center border-2 border-black bg-brand-charcoal shadow-brutal-sm"
+          aria-hidden="true"
+        >
+          <Bot className="h-4 w-4 text-brand-yellow" />
+        </span>
 
-        <div className="flex-1 rounded-2xl rounded-tl-xs border border-slate-200 bg-white p-4 text-slate-800 shadow-xs">
-          {/* Header indicator */}
-          <div className="mb-1 flex items-center justify-between text-xs text-slate-600">
-            <span className="font-semibold text-dsc-navy flex items-center gap-1">
-              DSCASC AI
-              <Sparkles className="h-3 w-3 text-dsc-gold" />
-            </span>
-            <span className="text-[10px] text-slate-600">{message.timestamp}</span>
-          </div>
-
-          {/* Formatted Text Content */}
-          <div className="text-sm leading-relaxed text-slate-700 whitespace-pre-wrap">
-            {message.text}
-          </div>
-
-          {/* Rich Card Components based on Intent Metadata */}
-          {res && (
-            <>
-              {res.cardType === "stats" && res.stats && (
-                <StatisticsCard stats={res.stats} />
-              )}
-
-              {res.highlights && res.highlights.length > 0 && (
-                <InformationCard highlights={res.highlights} />
-              )}
-
-              {res.contact && (
-                <ContactCard contact={res.contact} />
-              )}
-
-              {(res.links || res.source) && (
-                <LinkCard links={res.links} source={res.source} />
-              )}
-
-              {res.suggestions && onSelectSuggestion && (
-                <SuggestionCard
-                  suggestions={res.suggestions}
-                  onSelectSuggestion={onSelectSuggestion}
-                />
-              )}
-            </>
+        <div className="flex-1 border-2 border-black bg-white shadow-brutal">
+          {/* Identity / header strip */}
+          {isWelcome ? (
+            <div className="border-b-2 border-black bg-brand-charcoal px-4 py-3">
+              <div className="flex items-center gap-2.5">
+                <span className="flex h-9 w-9 items-center justify-center border-2 border-black bg-brand-yellow">
+                  <GraduationCap className="h-5 w-5 text-black" aria-hidden="true" />
+                </span>
+                <div>
+                  <div className="font-display text-base font-extrabold leading-none text-white">
+                    DSCASC AI
+                  </div>
+                  <div className="mt-1 text-[10px] font-bold uppercase tracking-widest text-brand-yellow">
+                    Smart Student Guidance Assistant
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="flex items-center justify-between border-b-2 border-black bg-brand-sage-light px-3.5 py-2">
+              <span className="flex items-center gap-1.5 text-[11px] font-extrabold uppercase tracking-widest text-brand-charcoal">
+                DSCASC AI
+                <span className="inline-block h-1.5 w-1.5 bg-emerald-500" aria-hidden="true" />
+              </span>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                {message.timestamp}
+              </span>
+            </div>
           )}
 
-          {/* AI Analysis Panel */}
-          {message.analysis && (
-            <AiAnalysisPanel
-              analysis={message.analysis}
-              forceOpen={showAiAnalysisAlways}
-            />
-          )}
+          {/* Message body */}
+          <div className="p-4">
+            <div className="whitespace-pre-wrap text-sm leading-relaxed text-brand-charcoal">
+              {message.text}
+            </div>
+
+            {/* Rich cards driven by existing intent metadata */}
+            {res && (
+              <>
+                {res.cardType === "stats" && res.stats && <StatisticsCard stats={res.stats} />}
+
+                {res.highlights && res.highlights.length > 0 && (
+                  <InformationCard highlights={res.highlights} />
+                )}
+
+                {res.contact && <ContactCard contact={res.contact} />}
+
+                {(res.links || res.source) && <LinkCard links={res.links} source={res.source} />}
+
+                {res.suggestions && onSelectSuggestion && (
+                  <SuggestionCard suggestions={res.suggestions} onSelectSuggestion={onSelectSuggestion} />
+                )}
+              </>
+            )}
+
+            {/* AI Analysis Panel (academic demonstration mode) */}
+            {message.analysis && (
+              <AiAnalysisPanel analysis={message.analysis} forceOpen={showAiAnalysisAlways} />
+            )}
+          </div>
         </div>
       </div>
     </div>

@@ -172,8 +172,8 @@ We implemented automated unit and integration tests using **Vitest**. The test s
 - TF-IDF mathematical properties and L2 norm validity
 - Cosine similarity edge cases (identical vs orthogonal vectors)
 - Confidence threshold evaluation
-- Real-world integration queries (admissions, timetable, placements, fees, out-of-domain fallbacks).  
-All 23 automated tests pass with a 100% success rate.
+- Real-world integration queries across all 7 degree programs (admissions, timetable, placements, fees, out-of-domain fallbacks).  
+All 33 automated tests pass with a 100% success rate.
 
 ---
 

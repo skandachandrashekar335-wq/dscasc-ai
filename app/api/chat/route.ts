@@ -4,7 +4,7 @@ import { matchUserQuery } from "@/lib/nlp";
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { query, threshold } = body;
+    const { query, threshold, context } = body;
 
     if (typeof query !== "string") {
       return NextResponse.json(
@@ -13,7 +13,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const matchResult = matchUserQuery(query, threshold);
+    const matchResult = matchUserQuery(query, threshold, context);
     return NextResponse.json(matchResult);
   } catch (error) {
     console.error("Chat API error:", error);

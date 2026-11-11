@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import {
   GraduationCap,
@@ -32,10 +33,14 @@ export const Navbar: React.FC = () => {
           href="/"
           className="group flex shrink-0 items-center gap-2.5"
         >
-          <span className="flex h-10 w-10 items-center justify-center border-2 border-black bg-brand-charcoal shadow-brutal-sm transition-all duration-150 group-hover:bg-brand-yellow group-active:translate-x-[2px] group-active:translate-y-[2px] group-active:shadow-brutal-none">
-            <GraduationCap
-              className="h-5 w-5 text-brand-yellow transition-colors group-hover:text-black"
-              aria-hidden="true"
+          <span className="flex h-10 w-10 items-center justify-center border-2 border-black bg-brand-charcoal p-[2px] shadow-brutal-sm transition-all duration-150 group-hover:bg-brand-yellow group-active:translate-x-[2px] group-active:translate-y-[2px] group-active:shadow-brutal-none">
+            <Image
+              src="/dscasc-logo.png"
+              alt="DSCASC official logo"
+              width={40}
+              height={40}
+              priority
+              className="h-full w-full object-cover"
             />
           </span>
           <span className="flex flex-col leading-none">

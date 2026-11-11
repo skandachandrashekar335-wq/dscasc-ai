@@ -38,6 +38,14 @@ const COMMON_SLANG_MAP: Record<string, string> = {
   "clg": "college",
   "collge": "college",
   "collg": "college",
+  "requird": "required",
+  "requried": "required",
+  "admision": "admission",
+  "hodd": "hod",
+  "dowload": "download",
+  "designtion": "designation",
+  "qualifcation": "qualification",
+  "qualifcations": "qualifications",
 };
 
 /**
@@ -51,7 +59,20 @@ export function normalizeText(text: string): string {
   // 1. Lowercase
   let normalized = text.toLowerCase();
 
-  // 2. Normalize acronyms with dots like b.c.a -> bca, b.com -> bcom, b.sc -> bsc
+  // 2. Expand common contractions
+  normalized = normalized.replace(/\bwhat's\b/g, "what is");
+  normalized = normalized.replace(/\bwho's\b/g, "who is");
+  normalized = normalized.replace(/\bwhere's\b/g, "where is");
+  normalized = normalized.replace(/\bhow's\b/g, "how is");
+  normalized = normalized.replace(/\bit's\b/g, "it is");
+  normalized = normalized.replace(/\bthat's\b/g, "that is");
+  normalized = normalized.replace(/'s\b/g, ""); // e.g. yesterday's -> yesterday
+  normalized = normalized.replace(/'ll\b/g, " will");
+  normalized = normalized.replace(/'ve\b/g, " have");
+  normalized = normalized.replace(/'re\b/g, " are");
+  normalized = normalized.replace(/'d\b/g, " would");
+
+  // 3. Normalize acronyms with dots like b.c.a -> bca, b.com -> bcom, b.sc -> bsc
   normalized = normalized.replace(/\bb\.c\.a\.?\b/g, "bca");
   normalized = normalized.replace(/\bb\.b\.a\.?\b/g, "bba");
   normalized = normalized.replace(/\bb\.com\.?\b/g, "bcom");

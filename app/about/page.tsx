@@ -351,7 +351,6 @@ export default function AboutPage() {
           <SectionHeading
             kicker="Deep dive"
             title="The mathematics behind each stage"
-            description="Viva-ready explanations of the pipeline components, formulas and guardrails."
           />
 
           <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-3">

@@ -154,7 +154,7 @@ $$\text{Cosine Similarity}(\hat{\mathbf{q}}, \hat{\mathbf{d}}) = \hat{\mathbf{q}
 ## Slide 10: Testing, Verification & Results
 
 - **Automated Test Suite (Vitest):**
-  - **23/23 Tests Passed (100% Pass Rate)** in < 200 milliseconds.
+  - **33/33 Tests Passed (100% Pass Rate)** in < 250 milliseconds.
   - Normalizer, Tokenizer, Stopwords, TF-IDF, Cosine Similarity, Confidence Threshold, and End-to-End Chat.
 - **Hallucination Prevention:**
   - Queries like *"What's the weather tomorrow?"* produce 0.00 score and safely trigger fallback.

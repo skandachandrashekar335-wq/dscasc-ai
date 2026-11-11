@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Send, Trash2, Sliders, Bot, Sparkles } from "lucide-react";
-import { matchUserQuery, MatchResult } from "@/lib/nlp";
+import { matchUserQuery, MatchResult, ChatContext } from "@/lib/nlp";
 import { ChatMessage, MessageItem } from "@/components/ChatMessage";
 
 const INITIAL_WELCOME_MESSAGE: MessageItem = {
@@ -37,6 +37,8 @@ function ChatInterface() {
   const [inputValue, setInputValue] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [showAiAnalysis, setShowAiAnalysis] = useState(false);
+  const [chatContext, setChatContext] = useState<ChatContext>({});
+  const chatContextRef = useRef<ChatContext>({});
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -86,7 +88,12 @@ function ChatInterface() {
 
     // Run the local NLP intent matcher (small delay for natural UX)
     setTimeout(() => {
-      const matchResult: MatchResult = matchUserQuery(text);
+      const matchResult: MatchResult = matchUserQuery(text, undefined, chatContextRef.current);
+
+      if (matchResult.context) {
+        chatContextRef.current = matchResult.context;
+        setChatContext(matchResult.context);
+      }
 
       const botMsg: MessageItem = {
         id: `bot-${Date.now()}`,
@@ -103,6 +110,8 @@ function ChatInterface() {
   };
 
   const handleClearChat = () => {
+    chatContextRef.current = {};
+    setChatContext({});
     setMessages([INITIAL_WELCOME_MESSAGE]);
     if (inputRef.current) {
       inputRef.current.focus();
@@ -226,6 +235,37 @@ function ChatInterface() {
       {/* Composer */}
       <div className="shrink-0 border-t-2 border-black bg-white p-3 sm:p-4">
         <div className="mx-auto max-w-4xl">
+          {(chatContext.lastEntityName || chatContext.lastTopicLabel) && (
+            <div className="mb-2 flex items-center justify-between gap-2 border border-black bg-brand-yellow/30 px-2.5 py-1 text-xs">
+              <div className="flex items-center gap-2 truncate">
+                <span className="font-extrabold uppercase tracking-wider text-black text-[10px]">Context:</span>
+                {chatContext.lastEntityName && (
+                  <span className="font-bold text-black border-r border-black/30 pr-2">
+                    {chatContext.lastEntityName}
+                  </span>
+                )}
+                {chatContext.lastTopicLabel && (
+                  <span className="inline-flex items-center gap-1 rounded border border-black bg-brand-charcoal text-brand-yellow px-1.5 py-0.5 text-[10px] font-black uppercase tracking-wider">
+                    Topic: {chatContext.lastTopicLabel}
+                  </span>
+                )}
+                <span className="text-[11px] text-slate-600 hidden sm:inline">
+                  (Follow-ups will use this context)
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  chatContextRef.current = {};
+                  setChatContext({});
+                }}
+                className="font-bold text-slate-700 hover:text-red-600 text-xs px-1 shrink-0"
+                title="Clear active context"
+              >
+                Reset Context ✕
+              </button>
+            </div>
+          )}
           <form
             onSubmit={(e) => {
               e.preventDefault();

@@ -4,4 +4,6 @@ export * from "./stopwords";
 export * from "./tfidf";
 export * from "./cosineSimilarity";
 export * from "./confidence";
+export * from "./entities";
+export * from "./topics";
 export * from "./intentMatcher";

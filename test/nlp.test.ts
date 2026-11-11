@@ -8,6 +8,7 @@ import {
   evaluateConfidence,
   matchUserQuery,
   getIntentMatcher,
+  ChatContext,
 } from "../lib/nlp";
 import { KNOWLEDGE_BASE } from "../lib/knowledgeBase";
 
@@ -282,6 +283,10 @@ describe("DSCASC AI - NLP Pipeline Unit Tests", () => {
     it("should map college-wide queries to their correct intents", () => {
       const expectations: Array<[string, string]> = [
         ["What are the admission requirements?", "admission_process"],
+        ["What is DSCASC?", "college_information"],
+        ["Where is DSCASC?", "college_location"],
+        ["How do I get admission?", "admission_process"],
+        ["How can I contact the college?", "contact_information"],
         ["What documents are required?", "documents_required"],
         ["How do I apply?", "admission_process"],
         ["What are the fees?", "fee_information"],
@@ -348,6 +353,214 @@ describe("DSCASC AI - NLP Pipeline Unit Tests", () => {
         expect(intent.response.source?.url, `${intent.id} source`).toBeTruthy();
         expect(intent.response.source?.lastVerified, `${intent.id} lastVerified`).toBeTruthy();
       }
+    });
+  });
+
+  describe("Phase 2 & 4 - Entity Recognition, Context, and Disambiguation", () => {
+    it("should recognise Dr. Aruna Devi across natural phrasing variations", () => {
+      const queries = [
+        "Who is Aruna Devi?",
+        "Tell me about Aruna Devi",
+        "Who is Dr. Aruna Devi?",
+        "Who is the HOD of BCA?",
+        "Who heads the BCA department?",
+        "What is the designation of Aruna Devi?",
+        "bca hod details",
+        "who is dr aruna devi c",
+      ];
+
+      for (const query of queries) {
+        const res = matchUserQuery(query);
+        expect(res.isConfident, `${query} should be confident`).toBe(true);
+        expect(res.detectedIntentId, `${query} should match faculty_information`).toBe("faculty_information");
+        expect(res.matchedIntent.response.text).toContain("Dr. Aruna Devi C");
+        expect(res.context?.lastEntityId).toBe("aruna_devi");
+      }
+    });
+
+    it("should recognise Principal Dr. Balu L across variations", () => {
+      const queries = [
+        "Who is Dr. Balu?",
+        "Who is Dr Balu L?",
+        "Who is the Principal?",
+        "Who is the Principal of DSCASC?",
+        "who heads the college",
+      ];
+
+      for (const query of queries) {
+        const res = matchUserQuery(query);
+        expect(res.isConfident, `${query} should be confident`).toBe(true);
+        expect(res.detectedIntentId, `${query} should match principal_information`).toBe("principal_information");
+        expect(res.matchedIntent.response.text).toContain("Dr. Balu L");
+        expect(res.context?.lastEntityId).toBe("balu_l");
+      }
+    });
+
+    it("should recognise Placement Head Ms. Geetha Raheja across variations", () => {
+      const queries = [
+        "Who is Geetha Raheja?",
+        "Who is the placement head?",
+        "Who is the placement officer?",
+        "Who heads placements?",
+      ];
+
+      for (const query of queries) {
+        const res = matchUserQuery(query);
+        expect(res.isConfident, `${query} should be confident`).toBe(true);
+        expect(res.detectedIntentId, `${query} should match placement_contact`).toBe("placement_contact");
+        expect(res.matchedIntent.response.text).toContain("Ms. Geetha H Raheja");
+        expect(res.context?.lastEntityId).toBe("geetha_raheja");
+      }
+    });
+
+    it("should resolve conversational pronouns using session-local context", () => {
+      // Step 1: User asks about BCA HOD
+      const step1 = matchUserQuery("Who is the HOD of BCA?");
+      expect(step1.context?.lastEntityId).toBe("aruna_devi");
+
+      const sessionContext: ChatContext = step1.context || {};
+
+      // Step 2: User asks follow-up with pronoun "her"
+      const step2 = matchUserQuery("What are her qualifications?", undefined, sessionContext);
+      expect(step2.isConfident).toBe(true);
+      expect(step2.detectedIntentId).toBe("faculty_information");
+      expect(step2.matchedIntent.response.text).toContain("MCA, M.Phil, Ph.D.");
+      expect(step2.matchedIntent.response.text).toContain("Dr. Aruna Devi C");
+
+      // Step 3: User asks contact follow-up
+      const step3 = matchUserQuery("What is her email address?", undefined, step2.context);
+      expect(step3.isConfident).toBe(true);
+      expect(step3.detectedIntentId).toBe("faculty_information");
+      expect(step3.matchedIntent.response.text).toContain("hod-bca@dayanandasagar.edu");
+
+      // Step 4: User asks about Principal Dr. Balu
+      const step4 = matchUserQuery("Who is Dr. Balu?", undefined, step3.context);
+      expect(step4.context?.lastEntityId).toBe("balu_l");
+
+      // Step 5: User asks follow-up with pronoun "his"
+      const step5 = matchUserQuery("What are his qualifications?", undefined, step4.context);
+      expect(step5.isConfident).toBe(true);
+      expect(step5.detectedIntentId).toBe("principal_information");
+      expect(step5.matchedIntent.response.text).toContain("MBA, PGDIM, M.Phil, Ph.D.");
+    });
+
+    it("should not confuse pronouns when gender does not match active context", () => {
+      // If current context is female (Aruna Devi) and user asks "What are his qualifications?"
+      const femaleContext: ChatContext = { lastEntityId: "aruna_devi", lastIntentId: "faculty_information" };
+      const mismatch = matchUserQuery("What are his qualifications?", undefined, femaleContext);
+      // Should not map to Aruna Devi
+      if (mismatch.isConfident) {
+        expect(mismatch.context?.lastEntityId).not.toBe("aruna_devi");
+      }
+    });
+
+    it("should ask for clarification on unrecognized faculty names instead of hallucinating", () => {
+      const ambiguousQueries = [
+        "Who is Dr. Kumar?",
+        "Who is Sharma?",
+        "Tell me about Dr. Ramesh",
+        "Who is prof mukherjee",
+      ];
+
+      for (const query of ambiguousQueries) {
+        const res = matchUserQuery(query);
+        expect(res.isConfident, `${query} should be confident clarification`).toBe(true);
+        expect(res.detectedIntentId, `${query} should trigger faculty_clarification`).toBe("faculty_clarification");
+        expect(res.matchedIntent.response.text).toContain("could not locate an individual faculty profile");
+        expect(res.matchedIntent.response.text).toContain("Dr. Balu L");
+        expect(res.matchedIntent.response.text).toContain("Dr. Aruna Devi C");
+        // Must provide official directory link
+        expect(res.matchedIntent.response.links?.some((l) => l.url.includes("bca-faculty"))).toBe(true);
+      }
+    });
+  });
+
+  describe("Topic-Aware Conversational Context", () => {
+    it("should resolve 'Who is the HOD?' in BCA context to Dr. Aruna Devi C", () => {
+      // Step 1: Tell me about BCA
+      const step1 = matchUserQuery("Tell me about BCA");
+      expect(step1.isConfident).toBe(true);
+      expect(step1.context?.lastTopic).toBe("bca");
+
+      // Step 2: Follow-up "Who is the HOD?"
+      const step2 = matchUserQuery("Who is the HOD?", undefined, step1.context);
+      expect(step2.isConfident).toBe(true);
+      expect(step2.detectedIntentId).toBe("faculty_information");
+      expect(step2.matchedIntent.response.text).toContain("Dr. Aruna Devi C");
+      expect(step2.context?.lastTopic).toBe("bca");
+    });
+
+    it("should resolve 'What is the syllabus?' in BCA context to BCA syllabus", () => {
+      // Step 1: Tell me about BCA
+      const step1 = matchUserQuery("Tell me about BCA");
+      expect(step1.context?.lastTopic).toBe("bca");
+
+      // Step 2: What is the syllabus?
+      const step2 = matchUserQuery("What is the syllabus?", undefined, step1.context);
+      expect(step2.isConfident).toBe(true);
+      expect(step2.detectedIntentId).toBe("syllabus");
+      expect(step2.context?.lastTopic).toBe("bca");
+    });
+
+    it("should resolve 'What documents are required?' in Admissions context to documents_required", () => {
+      // Step 1: Tell me about admissions
+      const step1 = matchUserQuery("Tell me about admissions");
+      expect(step1.isConfident).toBe(true);
+      expect(step1.context?.lastTopic).toBe("admissions");
+
+      // Step 2: What documents are required?
+      const step2 = matchUserQuery("What documents are required?", undefined, step1.context);
+      expect(step2.isConfident).toBe(true);
+      expect(step2.detectedIntentId).toBe("documents_required");
+      expect(step2.context?.lastTopic).toBe("admissions");
+    });
+
+    it("should resolve 'Who is the placement officer?' in Placements context to Ms. Geetha H Raheja", () => {
+      // Step 1: Tell me about placements
+      const step1 = matchUserQuery("Tell me about placements");
+      expect(step1.isConfident).toBe(true);
+      expect(step1.context?.lastTopic).toBe("placements");
+
+      // Step 2: Who is the placement officer?
+      const step2 = matchUserQuery("Who is the placement officer?", undefined, step1.context);
+      expect(step2.isConfident).toBe(true);
+      expect(step2.detectedIntentId).toBe("placement_contact");
+      expect(step2.matchedIntent.response.text).toContain("Ms. Geetha H Raheja");
+      expect(step2.context?.lastTopic).toBe("placements");
+    });
+
+    it("should update context when user switches subjects (BCA -> Admissions -> Who is the HOD?)", () => {
+      // Turn 1: BCA
+      const turn1 = matchUserQuery("Tell me about BCA");
+      expect(turn1.context?.lastTopic).toBe("bca");
+
+      // Turn 2: User shifts subjects to Admissions
+      const turn2 = matchUserQuery("Tell me about admissions", undefined, turn1.context);
+      expect(turn2.context?.lastTopic).toBe("admissions");
+      // Old BCA entity must not leak into admissions
+      expect(turn2.context?.lastEntityId).toBeUndefined();
+
+      // Turn 3: "Who is the HOD?" under Admissions context
+      const turn3 = matchUserQuery("Who is the HOD?", undefined, turn2.context);
+      expect(turn3.isConfident).toBe(true);
+      // Since admissions is an administrative division, it clarifies rather than blindly assuming BCA
+      expect(turn3.detectedIntentId).toBe("topic_clarification");
+      expect(turn3.matchedIntent.response.text).toContain("Admissions at DSCASC are coordinated by the Admissions Office");
+      expect(turn3.matchedIntent.response.text).toContain("Dr. Aruna Devi C");
+      expect(turn3.matchedIntent.response.text).toContain("Dr. Balu L");
+    });
+
+    it("should never force active context onto unrelated queries like weather", () => {
+      // Turn 1: BCA
+      const turn1 = matchUserQuery("Tell me about BCA");
+      expect(turn1.context?.lastTopic).toBe("bca");
+
+      // Turn 2: Completely unrelated query
+      const turn2 = matchUserQuery("What is the weather?", undefined, turn1.context);
+      expect(turn2.isConfident).toBe(false);
+      expect(turn2.detectedIntentId).toBe("unknown");
+      expect(turn2.matchedIntent.response.text).not.toContain("Dr. Aruna Devi C");
+      expect(turn2.matchedIntent.response.text).not.toContain("BCA");
     });
   });
 });

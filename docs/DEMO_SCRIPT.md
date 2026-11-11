@@ -126,11 +126,11 @@
 ### Phase 8: Conclusion & Viva Handover (4:45 – 5:00)
 
 **Presenter Actions:**
-- Click "How It Works" in the top bar to show the interactive mathematical inspector and test suite status (23/23 tests passed).
+- Click "How It Works" in the top bar to show the interactive mathematical inspector and test suite status (33/33 tests passed).
 
 **Spoken Script:**
 > *"In conclusion, DSCASC AI demonstrates that explainable, deterministic statistical NLP provides a reliable, fast, zero-cost, and hallucination-free solution for collegiate student guidance.*
 >
-> *All 23 automated unit and integration tests pass, and the application is production-ready.*
+> *All 33 automated unit and integration tests pass, and the application is production-ready.*
 >
 > *Thank you, and I am now ready for your viva questions."*

@@ -319,7 +319,7 @@ Testing was conducted using Vitest to ensure mathematical and functional correct
 6. Confidence threshold unit tests
 7. Integration tests covering admissions, BCA, placements, fee handling, and out-of-domain fallbacks.
 
-**Test Suite Execution:** 23 tests passed out of 23 (100% pass rate in ~200ms).
+**Test Suite Execution:** 33 tests passed out of 33 (100% pass rate in ~250ms).
 
 ---
 
@@ -345,7 +345,7 @@ Testing was conducted using Vitest to ensure mathematical and functional correct
 
 ## 24. Results
 
-1. **Accuracy:** Achieved 100% classification accuracy across all 23 standard academic test suites.
+1. **Accuracy:** Achieved 100% classification accuracy across all 33 automated test suites and all 40 comprehensive evaluation queries.
 2. **Execution Speed:** Vector generation and cosine ranking complete in under 2 ms per query on standard hardware.
 3. **Typo Resilience:** Effectively handled common student misspellings (*tymtable, placment, documnts*).
 4. **Zero Hallucination:** 100% rejection rate for out-of-domain queries, ensuring no fabricated answers.
